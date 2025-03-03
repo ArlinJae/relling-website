@@ -21,7 +21,7 @@ export default function Home() {
         </div>
         <div className="relative z-10 h-full flex items-center justify-center">
           <div className="container mx-auto px-4 text-center">
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
@@ -58,7 +58,7 @@ export default function Home() {
       </section>
 
       {/* Artistic Text Reveal Section */}
-      <section 
+      <section
         ref={scrollRef}
         className="min-h-screen relative flex items-center bg-gradient-to-b from-neutral-900 to-black py-32"
       >
@@ -66,7 +66,7 @@ export default function Home() {
         <div className="container mx-auto px-4 relative">
           <motion.div
             className="max-w-6xl mx-auto"
-            style={{ 
+            style={{
               color: textColor,
               scale: textScale,
               opacity: textOpacity,
@@ -230,7 +230,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.5)_100%)]" />
         <div className="relative container mx-auto px-4 py-32">
           <div className="max-w-5xl mx-auto">
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.8 }}
@@ -238,26 +238,26 @@ export default function Home() {
             >
               Testing in browser?
               <span className="block text-2xl md:text-4xl mt-4 text-gray-400">
-                Hell yes. It's that powerful.
+                Hell yes. It&apos;s that powerful.
               </span>
             </motion.p>
 
             <p className="text-2xl md:text-4xl leading-relaxed text-gray-400 italic mb-16">
               All of our solutions come with a purpose-built software solution that renders complex tests into Python. Our products are designed with precision, built for reliability, and optimized for performance.
             </p>
-            
+
             {/* Features Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Feature 1 */}
               <div className="p-6 rounded-lg bg-gradient-to-br from-red-900/40 to-orange-900/40 backdrop-blur-sm border border-white/5">
                 <p className="text-gray-200 text-lg mb-3 font-sans">
-                  Experience the future of hardware testing directly in your browser. No complex setup required—just open, configure, and start testing.
+                  Experience the future of hardware testing directly in your browser. No complex setup required&mdash;just open, configure, and start testing.
                 </p>
                 <h3 className="text-xl font-semibold bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent font-sans">
                   Browser-Native Testing
                 </h3>
               </div>
-              
+
               {/* Feature 2 */}
               <div className="p-6 rounded-lg bg-gradient-to-br from-orange-900/40 to-amber-900/40 backdrop-blur-sm border border-white/5">
                 <p className="text-gray-200 text-lg mb-3 font-sans">
@@ -267,17 +267,17 @@ export default function Home() {
                   Universal Hardware Support
                 </h3>
               </div>
-              
+
               {/* Feature 3 */}
               <div className="p-6 rounded-lg bg-gradient-to-br from-amber-900/40 to-yellow-900/40 backdrop-blur-sm border border-white/5">
                 <p className="text-gray-200 text-lg mb-3 font-sans">
-                  Build complex test suites with our intuitive drag-and-drop interface. Abstract away driver integrations and focus on what matters—your test logic.
+                  Build complex test suites with our intuitive drag-and-drop interface. Abstract away driver integrations and focus on what matters&mdash;your test logic.
                 </p>
                 <h3 className="text-xl font-semibold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent font-sans">
                   Visual Test Builder
                 </h3>
               </div>
-              
+
               {/* Feature 4 */}
               <div className="p-6 rounded-lg bg-gradient-to-br from-yellow-900/40 to-red-900/40 backdrop-blur-sm border border-white/5">
                 <p className="text-gray-200 text-lg mb-3 font-sans">
@@ -316,7 +316,7 @@ export default function Home() {
       <footer className="relative bg-gradient-to-b from-black via-neutral-950 to-black py-32">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.5)_100%)]" />
         <div className="container mx-auto px-4 relative">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -330,7 +330,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-center"
           >
-            <a 
+            <a
               href="mailto:ping@rellingsystems.com"
               className="text-xl text-gray-400 hover:text-white transition-colors duration-300"
             >

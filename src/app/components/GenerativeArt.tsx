@@ -1,14 +1,14 @@
 'use client';
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useMemo, useRef, Suspense } from 'react';
+import { useMemo, useRef, Suspense, SyntheticEvent } from 'react';
 import * as THREE from 'three';
 import React from 'react';
 
 function Lines() {
   const points = useMemo(() => {
     const p = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 100; i++) {
       const x = (Math.random() - 0.5) * 20;
       const y = (Math.random() - 0.5) * 20;
       const z = (Math.random() - 0.5) * 20;
@@ -17,9 +17,10 @@ function Lines() {
     return p;
   }, []);
 
-  const lineRef = useRef();
+  const lineRef = useRef<THREE.Line>(null);
 
   useFrame(({ clock }) => {
+    if (!lineRef.current) return;
     const elapsed = clock.getElapsedTime();
     lineRef.current.rotation.x = elapsed * 0.1;
     lineRef.current.rotation.y = elapsed * 0.15;
@@ -31,17 +32,14 @@ function Lines() {
   });
 
   return (
-    <line ref={lineRef}>
-      <bufferGeometry />
-      <lineBasicMaterial color="#ffffff" linewidth={1} opacity={0.1} transparent />
-    </line>
+    <primitive object={new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: "#ffffff", linewidth: 1, opacity: 0.1, transparent: true }))} ref={lineRef} />
   );
 }
 
 function FloatingParticles() {
   const count = 100;
-  const mesh = useRef();
-  
+  const mesh = useRef<THREE.Points>(null);
+
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
@@ -53,6 +51,7 @@ function FloatingParticles() {
   }, []);
 
   useFrame(({ clock }) => {
+    if (!mesh.current) return;
     const elapsed = clock.getElapsedTime();
     mesh.current.rotation.x = elapsed * 0.05;
     mesh.current.rotation.y = elapsed * 0.075;
@@ -66,6 +65,7 @@ function FloatingParticles() {
           count={count}
           array={positions}
           itemSize={3}
+          args={[positions, 3]}
         />
       </bufferGeometry>
       <pointsMaterial
@@ -81,8 +81,8 @@ function FloatingParticles() {
 
 export default function GenerativeArt() {
   // Add error boundary handling
-  const handleError = (error: any) => {
-    console.error('WebGL Error:', error);
+  const handleError = (event: SyntheticEvent<HTMLDivElement>) => {
+    console.error('WebGL Error:', event);
     return null;
   };
 
@@ -106,7 +106,7 @@ export default function GenerativeArt() {
 // Fallback component when WebGL fails
 function FallbackGradient() {
   return (
-    <div 
+    <div
       className="absolute inset-0 bg-gradient-radial from-blue-500/5 via-purple-500/5 to-transparent"
       style={{
         background: 'radial-gradient(circle at center, rgba(59,130,246,0.05), rgba(147,51,234,0.05), transparent)'
@@ -135,4 +135,4 @@ class ErrorBoundary extends React.Component<
     }
     return this.props.children;
   }
-} 
+}
