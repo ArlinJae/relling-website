@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Playfair_Display } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from "./components/Navigation";
 
-const playfair = Playfair_Display({ 
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
 });
@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth bg-black">
-      <body className={`${playfair.className} min-h-screen bg-black overflow-x-hidden antialiased`}>
+      <body className={`${inter.className} min-h-screen bg-black overflow-x-hidden antialiased`}>
         <Navigation />
         {children}
       </body>

@@ -5,6 +5,12 @@ import { Suspense, useRef } from 'react';
 import Image from 'next/image';
 import GenerativeArt from './components/GenerativeArt';
 import { useScrollColorChange } from './hooks/useScrollColorChange';
+import { Playfair_Display } from 'next/font/google';
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+});
 
 export default function Home() {
   const scrollRef = useRef<HTMLElement>(null);
@@ -25,7 +31,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="text-6xl md:text-[7rem] lg:text-[8rem] leading-[0.9] bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent dark:from-white dark:via-gray-200 dark:to-gray-400 from-neutral-900 via-neutral-800 to-neutral-700 mb-12 py-4"
+              className={`text-6xl md:text-[7rem] lg:text-[8rem] leading-[0.9] bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent dark:from-white dark:via-gray-200 dark:to-gray-400 from-neutral-900 via-neutral-800 to-neutral-700 mb-12 py-4 ${playfair.className}`}
             >
               Relling Systems
             </motion.h1>
@@ -33,9 +39,9 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-xl md:text-3xl text-gray-400 max-w-4xl mx-auto italic"
+              className={`text-xl md:text-3xl text-gray-400 max-w-4xl mx-auto ${playfair.className}`}
             >
-              New age testing infrastructure to accelerate hardware time to deployment
+              <em>New age testing infrastructure to accelerate hardware time to deployment</em>
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -65,14 +71,14 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.7)_100%)]" />
         <div className="container mx-auto px-4 relative">
           <motion.div
-            className="max-w-6xl mx-auto"
+            className={`max-w-6xl mx-auto px-2 ${playfair.className}`}
             style={{
               color: textColor,
               scale: textScale,
               opacity: textOpacity,
             }}
           >
-            <p className="text-4xl md:text-7xl lg:text-8xl leading-tight font-light">
+            <p className="text-4xl md:text-7xl lg:text-8xl leading-tight">
               Relling Systems is building testing infrastructure to accelerate modern hardware innovation.
             </p>
           </motion.div>
@@ -86,10 +92,10 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-24">
             {/* Node Product */}
             <div className="space-y-8">
-              <h2 className="text-7xl md:text-9xl bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              <h2 className={`text-7xl md:text-9xl bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent ${playfair.className}`}>
                 Node
               </h2>
-              <p className="text-2xl md:text-3xl text-gray-400 max-w-lg italic">
+              <p className={`text-2xl md:text-3xl text-gray-400 max-w-lg italic ${playfair.className}`}>
                 Your powerful central hub for seamless system integration. Testing so easy your mechE can do it.
               </p>
               <div className="text-lg text-gray-300 mb-8 max-w-2xl font-sans">
@@ -113,7 +119,7 @@ export default function Home() {
                   <div className="relative bg-black">
                     {/* Specs Section */}
                     <div className="p-6">
-                      <div className="grid grid-cols-4 gap-6 font-mono text-sm tracking-tight">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 font-mono text-sm tracking-tight">
                         <div className="space-y-1">
                           <div className="text-gray-400 text-xs uppercase tracking-wider">Dimensions</div>
                           <div className="text-white font-mono">130x50x120mm</div>
@@ -155,20 +161,20 @@ export default function Home() {
 
             {/* Terminal Product */}
             <div className="space-y-8">
-              <h2 className="text-7xl md:text-9xl bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent text-right">
+              <h2 className={`text-7xl md:text-9xl bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent text-right ${playfair.className}`}>
                 Terminal
               </h2>
-              <p className="text-2xl md:text-3xl text-gray-400 max-w-lg italic ml-auto text-right">
+              <p className={`text-2xl md:text-3xl text-gray-400 max-w-lg italic ml-auto text-right ${playfair.className}`}>
                 Advanced command center for ultimate control. The new age testing powerhouse for test engineers.
               </p>
               <div className="text-lg text-gray-300 mb-8 max-w-2xl ml-auto text-right font-sans">
-                Terminal is a real-time, AI-driven test automation platform designed for R&D labs and industrial validation. It replaces slow, proprietary test systems with hardware-accelerated processing, vendor-agnostic connectivity, and AI-optimized testing.
+                Terminal is a real-time test automation platform designed for R&D labs & industrial validation. It replaces slow, proprietary test systems with hardware-accelerated processing, vendor-agnostic connectivity & AI-optimized testing.
               </div>
               <div className="space-y-8">
                 <div className="relative bg-[linear-gradient(315deg,#003366_0%,#242124_74%)] rounded-lg backdrop-blur-sm border border-white/5 group">
                   {/* Product Image */}
-                  <div className="relative aspect-square w-full p-4 flex items-center justify-end">
-                    <div className="relative w-[120%] h-full ml-20 -mr-24">
+                  <div className="relative aspect-square w-full p-4 flex items-center justify-center md:justify-end">
+                    <div className="relative w-[110%] -mr-8 md:w-[120%] h-full md:ml-20 md:-mr-24">
                       <Image
                         src="/images/terminal.png"
                         alt="Terminal Product Render"
@@ -182,7 +188,7 @@ export default function Home() {
                   <div className="relative bg-black">
                     {/* Specs Section */}
                     <div className="p-6">
-                      <div className="grid grid-cols-4 gap-6 font-mono text-sm tracking-tight">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 font-mono text-sm tracking-tight">
                         <div className="space-y-1">
                           <div className="text-gray-400 text-xs uppercase tracking-wider">Form Factor</div>
                           <div className="text-white font-mono">4U Rack</div>
@@ -234,24 +240,24 @@ export default function Home() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.8 }}
-              className="text-4xl md:text-6xl lg:text-7xl leading-tight text-center bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent mb-24"
+              className={`text-5xl md:text-7xl lg:text-8xl leading-[0.9] bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent mb-24 text-center ${playfair.className}`}
             >
               Testing in browser?
-              <span className="block text-2xl md:text-4xl mt-4 text-gray-400">
+              <span className="block text-3xl md:text-5xl mt-8 text-gray-400">
                 Hell yes. It&apos;s that powerful.
               </span>
             </motion.p>
 
-            <p className="text-2xl md:text-4xl leading-relaxed text-gray-400 italic mb-16">
-              All of our solutions come with a purpose-built software solution that renders complex tests into Python. Our products are designed with precision, built for reliability, and optimized for performance.
+            <p className={`text-2xl md:text-4xl leading-relaxed text-gray-400 italic mb-16 ${playfair.className}`}>
+              <em>All of our solutions come with a purpose-built software solution that renders complex tests into Python. Our products are designed with precision, built for reliability, and optimized for performance.</em>
             </p>
 
             {/* Features Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Feature 1 */}
-              <div className="p-6 rounded-lg bg-gradient-to-br from-red-900/40 to-orange-900/40 backdrop-blur-sm border border-white/5">
+              <div className="p-6 rounded-lg bg-gradient-to-br from-[#4a1c17] to-[#2a0000] backdrop-blur-sm border border-white/5">
                 <p className="text-gray-200 text-lg mb-3 font-sans">
-                  Experience the future of hardware testing directly in your browser. No complex setup required&mdash;just open, configure, and start testing.
+                  Experience the future of hardware testing directly in your browser. No complex setup required—just open, configure, and start testing.
                 </p>
                 <h3 className="text-xl font-semibold bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent font-sans">
                   Browser-Native Testing
@@ -259,7 +265,7 @@ export default function Home() {
               </div>
 
               {/* Feature 2 */}
-              <div className="p-6 rounded-lg bg-gradient-to-br from-orange-900/40 to-amber-900/40 backdrop-blur-sm border border-white/5">
+              <div className="p-6 rounded-lg bg-gradient-to-br from-[#3d1915] to-[#2a0000] backdrop-blur-sm border border-white/5">
                 <p className="text-gray-200 text-lg mb-3 font-sans">
                   Connect and control any hardware through our vendor-agnostic platform. Break free from proprietary ecosystems and choose the best tools for your needs.
                 </p>
@@ -269,9 +275,9 @@ export default function Home() {
               </div>
 
               {/* Feature 3 */}
-              <div className="p-6 rounded-lg bg-gradient-to-br from-amber-900/40 to-yellow-900/40 backdrop-blur-sm border border-white/5">
+              <div className="p-6 rounded-lg bg-gradient-to-br from-[#4a1c17] to-[#2a0000] backdrop-blur-sm border border-white/5">
                 <p className="text-gray-200 text-lg mb-3 font-sans">
-                  Build complex test suites with our intuitive drag-and-drop interface. Abstract away driver integrations and focus on what matters&mdash;your test logic.
+                  Build complex test suites with our intuitive drag-and-drop interface. Abstract away driver integrations and focus on what matters—your test logic.
                 </p>
                 <h3 className="text-xl font-semibold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent font-sans">
                   Visual Test Builder
@@ -279,7 +285,7 @@ export default function Home() {
               </div>
 
               {/* Feature 4 */}
-              <div className="p-6 rounded-lg bg-gradient-to-br from-yellow-900/40 to-red-900/40 backdrop-blur-sm border border-white/5">
+              <div className="p-6 rounded-lg bg-gradient-to-br from-[#3d1915] to-[#2a0000] backdrop-blur-sm border border-white/5">
                 <p className="text-gray-200 text-lg mb-3 font-sans">
                   Every test configuration compiles into clean, maintainable Python and YAML. Empower your entire team to work in the language they know and love.
                 </p>
@@ -289,7 +295,7 @@ export default function Home() {
               </div>
 
               {/* Feature 5 */}
-              <div className="p-6 rounded-lg bg-gradient-to-br from-red-900/40 to-orange-900/40 backdrop-blur-sm border border-white/5">
+              <div className="p-6 rounded-lg bg-gradient-to-br from-[#4a1c17] to-[#2a0000] backdrop-blur-sm border border-white/5">
                 <p className="text-gray-200 text-lg mb-3 font-sans">
                   AI-powered test optimization gets you up and running in minutes, not days. Automatically tune parameters and identify optimal test configurations.
                 </p>
@@ -299,7 +305,7 @@ export default function Home() {
               </div>
 
               {/* Feature 6 */}
-              <div className="p-6 rounded-lg bg-gradient-to-br from-orange-900/40 to-amber-900/40 backdrop-blur-sm border border-white/5">
+              <div className="p-6 rounded-lg bg-gradient-to-br from-[#3d1915] to-[#2a0000] backdrop-blur-sm border border-white/5">
                 <p className="text-gray-200 text-lg mb-3 font-sans">
                   Create, save, and share test configurations across your organization. Build a library of reusable test suites that grow with your needs.
                 </p>
@@ -320,7 +326,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-6xl md:text-[8rem] lg:text-[10rem] leading-[0.9] bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent text-center mb-16 py-4"
+            className={`text-6xl md:text-[8rem] lg:text-[10rem] leading-[0.9] bg-gradient-to-b from-white via-gray-200 to-gray-400 bg-clip-text text-transparent text-center mb-16 py-4 ${playfair.className}`}
           >
             Relling Systems
           </motion.h2>
