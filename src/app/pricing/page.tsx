@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import SensorCalculator from './sensor-calculator';
 
 interface DataPoint {
   channels: number;
@@ -137,7 +138,21 @@ const CostComparisonChart = () => {
 export default function Page() {
   return (
     <main className="min-h-screen bg-white">
-      <CostComparisonChart />
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Pricing & Cost Comparison</h1>
+        
+        <div className="mb-12">
+          <CostComparisonChart />
+        </div>
+        
+        <div className="border-t pt-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Calculate Your Specific Costs</h2>
+          <p className="text-gray-600 mb-8">
+            Select your industrial sensors and machines to see a detailed cost comparison between Node and traditional SCADA systems.
+          </p>
+          <SensorCalculator />
+        </div>
+      </div>
     </main>
   );
 } 
