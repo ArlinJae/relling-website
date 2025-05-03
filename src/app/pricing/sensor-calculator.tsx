@@ -332,7 +332,6 @@ const calculateCosts = (totalChannels: number): CostCalculation => {
 export default function SensorCalculator() {
   const [selectedSensors, setSelectedSensors] = useState<SelectedSensor[]>([]);
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
-  const [costs, setCosts] = useState<CostCalculation | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -388,21 +387,18 @@ export default function SensorCalculator() {
     });
   };
 
-  useEffect(() => {
-    const calculateTotalChannels = () => {
-      const sensorChannels = selectedSensors.reduce((sum, { sensor, quantity }) => 
-        sum + (sensor.channels * quantity), 0);
-      const machineChannels = selectedMachines.reduce((sum, machine) => 
-        sum + machine.sensors.reduce((sensorSum, sensor) => sensorSum + sensor.channels, 0), 0);
-      return sensorChannels + machineChannels;
-    };
-    const totalChannels = calculateTotalChannels();
-    setCosts(calculateCosts(totalChannels));
-  }, [selectedSensors, selectedMachines]);
+  const totalChannels = (() => {
+    const sensorChannels = selectedSensors.reduce((sum, { sensor, quantity }) => sum + (sensor.channels * quantity), 0);
+    const machineChannels = selectedMachines.reduce((sum, machine) => sum + machine.sensors.reduce((sensorSum, sensor) => sensorSum + sensor.channels, 0), 0);
+    return sensorChannels + machineChannels;
+  })();
+  const nodeAnnual = (totalChannels * 150) + 50;
+  const scadaAnnual = 23000 + 5000;
+  const annualSavings = scadaAnnual - nodeAnnual;
 
   const calculateSavingsPercentage = () => {
-    if (!costs) return 0;
-    return Math.round((costs.savings / costs.scadaCost) * 100);
+    if (annualSavings === 0) return 0;
+    return Math.round((annualSavings / scadaAnnual) * 100);
   };
 
   const formatCurrency = (value: number | undefined) => {
@@ -569,7 +565,7 @@ export default function SensorCalculator() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-300">Annual Channel Fees:</span>
-                <span className="font-medium text-white">{formatCurrency((costs?.totalChannels || 0) * 150)}</span>
+                <span className="font-medium text-white">{formatCurrency(nodeAnnual)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-300">Annual Storage (1TB):</span>
@@ -577,7 +573,7 @@ export default function SensorCalculator() {
               </div>
               <div className="flex justify-between pt-3 border-t border-gray-700">
                 <span className="font-semibold text-white">Total Annual Cost:</span>
-                <span className="font-bold text-white">{formatCurrency(((costs?.totalChannels || 0) * 150) + 50)}</span>
+                <span className="font-bold text-white">{formatCurrency(nodeAnnual + 50)}</span>
               </div>
             </div>
           </div>
@@ -587,7 +583,7 @@ export default function SensorCalculator() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-300">Annual License & Maintenance:</span>
-                <span className="font-medium text-white">{formatCurrency(23000)}</span>
+                <span className="font-medium text-white">{formatCurrency(scadaAnnual)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-300">Annual Storage (1TB):</span>
@@ -595,7 +591,7 @@ export default function SensorCalculator() {
               </div>
               <div className="flex justify-between pt-3 border-t border-gray-700">
                 <span className="font-semibold text-white">Total Annual Cost:</span>
-                <span className="font-bold text-white">{formatCurrency(23000 + 5000)}</span>
+                <span className="font-bold text-white">{formatCurrency(scadaAnnual + 5000)}</span>
               </div>
             </div>
           </div>
@@ -605,7 +601,7 @@ export default function SensorCalculator() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
               <h4 className="text-lg font-semibold text-blue-200">Annual Savings with Node</h4>
-              <p className="text-blue-300">{formatCurrency((23000 + 5000) - (((costs?.totalChannels || 0) * 150) + 50))} saved per year</p>
+              <p className="text-blue-300">{formatCurrency(annualSavings)} saved per year</p>
             </div>
           </div>
         </div>
