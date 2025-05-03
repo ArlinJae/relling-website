@@ -431,7 +431,7 @@ export default function SensorCalculator() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-2 sm:p-6 bg-gray-900 rounded-b-lg">
       {/* Presets Section */}
       <div className="mb-8">
         <h3 className="text-lg font-semibold text-white mb-4">Quick Start Presets</h3>
@@ -440,7 +440,7 @@ export default function SensorCalculator() {
             <button
               key={preset.name}
               onClick={() => applyPreset(preset)}
-              className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors border border-gray-600"
+              className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg text-left transition-colors border border-gray-700"
             >
               <h4 className="font-medium text-white mb-1">{preset.name}</h4>
               <p className="text-sm text-gray-300">{preset.description}</p>
@@ -458,7 +458,7 @@ export default function SensorCalculator() {
               placeholder="Search sensors..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="flex gap-2 overflow-x-auto pb-2">
@@ -469,7 +469,7 @@ export default function SensorCalculator() {
                 className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
                   selectedCategory === (category === 'All' ? null : category)
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                 }`}
               >
                 {category}
@@ -484,7 +484,7 @@ export default function SensorCalculator() {
         <h3 className="text-lg font-semibold text-white mb-4">Selected Sensors & Machines</h3>
         <div className="space-y-4">
           {selectedSensors.map(({ sensor, quantity }) => (
-            <div key={sensor.id} className="flex items-center justify-between p-4 bg-gray-700 rounded-lg border border-gray-600">
+            <div key={sensor.id} className="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700">
               <div>
                 <h4 className="font-medium text-white">{sensor.name}</h4>
                 <p className="text-sm text-gray-300">{sensor.channels} channels</p>
@@ -493,14 +493,14 @@ export default function SensorCalculator() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => removeSensor(sensor.id)}
-                    className="p-1 rounded-lg bg-gray-600 hover:bg-gray-500 text-white"
+                    className="p-1 rounded-lg bg-gray-700 hover:bg-gray-600 text-white"
                   >
                     <MinusIcon className="h-4 w-4" />
                   </button>
                   <span className="text-white font-medium">{quantity}</span>
                   <button
                     onClick={() => addSensor(sensor)}
-                    className="p-1 rounded-lg bg-gray-600 hover:bg-gray-500 text-white"
+                    className="p-1 rounded-lg bg-gray-700 hover:bg-gray-600 text-white"
                   >
                     <PlusIcon className="h-4 w-4" />
                   </button>
@@ -528,7 +528,7 @@ export default function SensorCalculator() {
             <button
               key={sensor.id}
               onClick={() => addSensor(sensor)}
-              className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors border border-gray-600"
+              className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg text-left transition-colors border border-gray-700"
             >
               <div className="flex justify-between items-start mb-2">
                 <h4 className="font-medium text-white">{sensor.name}</h4>
@@ -537,7 +537,7 @@ export default function SensorCalculator() {
               <p className="text-sm text-gray-300 mb-2">{sensor.description}</p>
               <div className="flex flex-wrap gap-2">
                 {sensor.commonUses?.map((use) => (
-                  <span key={use} className="text-xs px-2 py-1 bg-gray-600 rounded-full text-gray-300">
+                  <span key={use} className="text-xs px-2 py-1 bg-gray-700 rounded-full text-gray-300">
                     {use}
                   </span>
                 ))}
@@ -555,7 +555,7 @@ export default function SensorCalculator() {
             <button
               key={machine.id}
               onClick={() => removeMachine(machine.id)}
-              className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors border border-gray-600"
+              className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg text-left transition-colors border border-gray-700"
             >
               <div className="flex justify-between items-start mb-2">
                 <h4 className="font-medium text-white">{machine.name}</h4>
@@ -564,7 +564,7 @@ export default function SensorCalculator() {
               <p className="text-sm text-gray-300 mb-2">{machine.description}</p>
               <div className="flex flex-wrap gap-2">
                 {machine.sensors.map((sensor) => (
-                  <span key={sensor.id} className="text-xs px-2 py-1 bg-gray-600 rounded-full text-gray-300">
+                  <span key={sensor.id} className="text-xs px-2 py-1 bg-gray-700 rounded-full text-gray-300">
                     {sensor.name}
                   </span>
                 ))}
@@ -575,10 +575,10 @@ export default function SensorCalculator() {
       </div>
 
       {/* Cost Summary Section */}
-      <div className="mt-8 p-6 bg-gray-800 rounded-lg border border-gray-700">
+      <div className="mt-8 p-4 sm:p-6 bg-gray-800 rounded-lg border border-gray-700">
         <h3 className="text-xl font-bold text-white mb-6">Cost Summary</h3>
         
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <h4 className="text-lg font-semibold text-white mb-4">Node</h4>
             <div className="space-y-3">
@@ -594,7 +594,7 @@ export default function SensorCalculator() {
                 <span className="text-gray-300">Data Storage (10TB):</span>
                 <span className="font-medium text-white">$4,680</span>
               </div>
-              <div className="flex justify-between pt-3 border-t border-gray-600">
+              <div className="flex justify-between pt-3 border-t border-gray-700">
                 <span className="font-semibold text-white">Total 5-Year Cost:</span>
                 <span className="font-bold text-white">{formatCurrency((costs?.nodeCost || 0) + 4680)}</span>
               </div>
@@ -616,7 +616,7 @@ export default function SensorCalculator() {
                 <span className="text-gray-300">Support Costs:</span>
                 <span className="font-medium text-white">$10,000</span>
               </div>
-              <div className="flex justify-between pt-3 border-t border-gray-600">
+              <div className="flex justify-between pt-3 border-t border-gray-700">
                 <span className="font-semibold text-white">Total 5-Year Cost:</span>
                 <span className="font-bold text-white">{formatCurrency((costs?.scadaCost || 0) + 8000 + 10000)}</span>
               </div>
@@ -625,7 +625,7 @@ export default function SensorCalculator() {
         </div>
 
         <div className="mt-6 p-4 bg-blue-900/50 rounded-lg border border-blue-800">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
               <h4 className="text-lg font-semibold text-blue-200">Total Savings with Node</h4>
               <p className="text-blue-300">{calculateSavingsPercentage()}% reduction in total cost of ownership</p>

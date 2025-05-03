@@ -189,9 +189,8 @@ const CostComparisonChart = () => {
       {/* ROI Analysis Section */}
       <div className="mt-8 bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
         <h3 className="text-xl font-bold text-white mb-4">5-Year ROI Analysis (35-Channel System)</h3>
-        
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-gray-700 p-4 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-900 p-4 rounded-lg">
             <h4 className="text-lg font-semibold text-white mb-3">Traditional SCADA</h4>
             <ul className="space-y-2">
               <li className="flex justify-between">
@@ -206,14 +205,13 @@ const CostComparisonChart = () => {
                 <span className="text-gray-300">Support Costs (5 years):</span>
                 <span className="font-medium text-white">$50,000</span>
               </li>
-              <li className="flex justify-between pt-2 border-t border-gray-600">
+              <li className="flex justify-between pt-2 border-t border-gray-700">
                 <span className="font-semibold text-white">Total 5-Year Cost:</span>
                 <span className="font-bold text-white">$135,000</span>
               </li>
             </ul>
           </div>
-
-          <div className="bg-gray-700 p-4 rounded-lg">
+          <div className="bg-gray-900 p-4 rounded-lg">
             <h4 className="text-lg font-semibold text-white mb-3">Node</h4>
             <ul className="space-y-2">
               <li className="flex justify-between">
@@ -228,16 +226,15 @@ const CostComparisonChart = () => {
                 <span className="text-gray-300">Data Storage (10TB):</span>
                 <span className="font-medium text-white">$4,680</span>
               </li>
-              <li className="flex justify-between pt-2 border-t border-gray-600">
+              <li className="flex justify-between pt-2 border-t border-gray-700">
                 <span className="font-semibold text-white">Total 5-Year Cost:</span>
                 <span className="font-bold text-white">$36,930</span>
               </li>
             </ul>
           </div>
         </div>
-
         <div className="mt-6 bg-blue-900/50 p-4 rounded-lg border border-blue-800">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
               <h4 className="text-lg font-semibold text-blue-200">Total Savings with Node</h4>
               <p className="text-blue-300">73% reduction in total cost of ownership</p>
@@ -256,16 +253,14 @@ const CostComparisonChart = () => {
 export default function Page() {
   return (
     <main className="min-h-screen bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-6">
         <h1 className="text-3xl font-bold text-white mb-8">Pricing & Cost Comparison</h1>
-        
-        <div className="mb-12 bg-gray-800 p-6 rounded-lg shadow-lg border border-gray-700">
+        <div className="mb-12 bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg border border-gray-700">
           <CostComparisonChart />
         </div>
-        
         <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-700">
-          <div className="p-6 border-b border-gray-700">
-            <h2 className="text-2xl font-bold text-white mb-6">Calculate Your Specific Costs</h2>
+          <div className="p-4 sm:p-6 border-b border-gray-700">
+            <h2 className="text-2xl font-bold text-white mb-4 sm:mb-6">Calculate Your Specific Costs</h2>
             <p className="text-gray-300">
               Select your industrial sensors and machines to see a detailed cost comparison between Node and traditional SCADA systems.
             </p>
