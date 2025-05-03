@@ -64,6 +64,9 @@ const commonSensors: Sensor[] = [
   { id: 'light-array-16', name: '16-Channel Light Array', channels: 16, category: 'Optical', description: 'Multi-point light' },
   { id: 'sound-sensor', name: 'Sound Sensor', channels: 1, category: 'Acoustic', description: 'Sound level' },
   { id: 'sound-array-8', name: '8-Channel Sound Array', channels: 8, category: 'Acoustic', description: 'Multi-point sound' },
+  { id: 'pressure-transmitter', name: 'Pressure Transmitter', channels: 1, category: 'Pressure', description: 'Industrial pressure measurement' },
+  { id: 'temp-probe', name: 'Temperature Probe', channels: 1, category: 'Temperature', description: 'General temperature monitoring' },
+  { id: 'humidity-sensor', name: 'Humidity Sensor', channels: 1, category: 'Humidity', description: 'Ambient humidity' },
   // ...add more as needed
 ];
 
@@ -414,8 +417,8 @@ export default function SensorCalculator() {
           {selectedSensors.map(({ sensor, quantity }) => (
             <div key={sensor.id} className="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700">
               <div>
-                <h4 className="font-medium text-white">{sensor.name}</h4>
-                <p className="text-sm text-gray-300">{sensor.channels} channels</p>
+                <h4 className="font-medium text-white">{sensor.name} <span className="inline-block bg-blue-800 text-blue-200 text-xs font-bold px-2 py-1 rounded-full ml-2">{sensor.channels} channels</span></h4>
+                <p className="text-sm text-gray-300">{sensor.description}</p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
@@ -459,8 +462,7 @@ export default function SensorCalculator() {
               className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg text-left transition-colors border border-gray-700"
             >
               <div className="flex justify-between items-start mb-2">
-                <h4 className="font-medium text-white">{sensor.name}</h4>
-                <span className="text-sm text-gray-400">{sensor.channels} channels</span>
+                <h4 className="font-medium text-white">{sensor.name} <span className="inline-block bg-blue-800 text-blue-200 text-xs font-bold px-2 py-1 rounded-full ml-2">{sensor.channels} channels</span></h4>
               </div>
               <p className="text-sm text-gray-300 mb-2">{sensor.description}</p>
               <div className="flex flex-wrap gap-2">
@@ -486,8 +488,7 @@ export default function SensorCalculator() {
               className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg text-left transition-colors border border-gray-700"
             >
               <div className="flex justify-between items-start mb-2">
-                <h4 className="font-medium text-white">{machine.name}</h4>
-                <span className="text-sm text-gray-400">{machine.sensors.reduce((sum, s) => sum + s.channels, 0)} channels</span>
+                <h4 className="font-medium text-white">{machine.name} <span className="inline-block bg-blue-800 text-blue-200 text-xs font-bold px-2 py-1 rounded-full ml-2">{machine.sensors.reduce((sum, s) => sum + s.channels, 0)} channels</span></h4>
               </div>
               <p className="text-sm text-gray-300 mb-2">{machine.description}</p>
               <div className="flex flex-wrap gap-2">
