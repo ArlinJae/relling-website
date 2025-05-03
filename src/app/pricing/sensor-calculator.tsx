@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { MagnifyingGlassIcon, PlusIcon, MinusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface Sensor {
@@ -414,9 +414,9 @@ export default function SensorCalculator() {
     setCosts(calculateCosts(totalChannels));
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     updateCosts();
-  }, [selectedSensors, selectedMachines]);
+  }, [selectedSensors, selectedMachines, updateCosts]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
