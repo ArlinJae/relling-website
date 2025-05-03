@@ -43,13 +43,6 @@ export default function PricingPage() {
     return data;
   };
 
-  const data = generateData();
-  
-  // Format currency numbers
-  const formatCurrency = (value: number) => {
-    return `$${value.toLocaleString()}`;
-  };
-
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
       <div className="max-w-5xl mx-auto py-12 px-4 sm:px-8">
