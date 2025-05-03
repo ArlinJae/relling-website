@@ -36,7 +36,6 @@ interface Preset {
 
 const commonSensors: Sensor[] = [
   { id: 'temp-rtd', name: 'RTD Temperature Sensor', channels: 1, category: 'Temperature', description: 'Precision temperature measurement' },
-  { id: 'temp-thermocouple', name: 'Thermocouple', channels: 1, category: 'Temperature', description: 'High-temp applications' },
   { id: 'temp-array-8', name: '8-Channel Thermocouple Array', channels: 8, category: 'Temperature', description: 'Multi-point temperature monitoring' },
   { id: 'temp-array-32', name: '32-Channel Temp DAQ', channels: 32, category: 'Temperature', description: 'High-density temperature DAQ' },
   { id: 'press-gauge', name: 'Pressure Gauge', channels: 1, category: 'Pressure', description: 'Fluid/gas pressure' },
@@ -345,14 +344,24 @@ export default function SensorCalculator() {
     return { total: sensorChannels + machineChannels, machineChannels };
   })();
   const numMachines = selectedMachines.length;
-  const nodeStorageGB = Math.ceil((selectedSensors.length + totalChannels.machineChannels) / 6);
-  const scadaStorageGB = nodeStorageGB;
-  const nodeCost = (numMachines * 6000) + (totalChannels.total * 200) + (nodeStorageGB * 0.05 * 12);
+  const numSensors = selectedSensors.length + totalChannels.machineChannels;
+  const storageTB = Math.ceil(numSensors / 6);
+  // Node
+  const nodeHardwareCost = numMachines * 6000;
+  const nodeAnnualChannelCost = totalChannels.total * 200;
+  const nodeAnnualStorageCost = storageTB * 600;
+  const nodeAnnualTotal = nodeAnnualChannelCost + nodeAnnualStorageCost;
+  const nodeFiveYearTotal = nodeHardwareCost + (nodeAnnualTotal * 5);
+  // SCADA
+  const scadaDevCost = 30000;
   let scadaPerChannel = 1000;
   if (totalChannels.total > 200) scadaPerChannel = 650;
   else if (totalChannels.total > 50) scadaPerChannel = 750;
-  const scadaCost = 30000 + (totalChannels.total * scadaPerChannel) + (scadaStorageGB * 0.40 * 12);
-  const savings = Math.max(scadaCost - nodeCost, 0);
+  const scadaAnnualChannelCost = totalChannels.total * scadaPerChannel;
+  const scadaAnnualStorageCost = storageTB * 70;
+  const scadaAnnualTotal = scadaAnnualChannelCost + scadaAnnualStorageCost;
+  const scadaFiveYearTotal = scadaDevCost + (scadaAnnualTotal * 5);
+  const savings = Math.max(scadaFiveYearTotal - nodeFiveYearTotal, 0);
 
   const formatCurrency = (value: number | undefined) => {
     if (value === undefined) return '$0';
@@ -495,52 +504,69 @@ export default function SensorCalculator() {
 
       {/* Cost Summary Section */}
       <div className="mt-8 p-4 sm:p-6 bg-gray-800 rounded-lg border border-gray-700">
-        <h3 className="text-xl font-bold text-white mb-6">Annual Cost Summary</h3>
-        
+        <h3 className="text-xl font-bold text-white mb-6">Cost Summary</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <h4 className="text-lg font-semibold text-white mb-4">Node</h4>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-300">Annual Channel Fees:</span>
-                <span className="font-medium text-white">{formatCurrency(nodeCost)}</span>
+                <span className="text-gray-300">Hardware/Development (one-time):</span>
+                <span className="font-medium text-white">{formatCurrency(nodeHardwareCost)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-300">Annual Storage (1TB):</span>
-                <span className="font-medium text-white">{formatCurrency(nodeStorageGB * 0.05 * 12)}</span>
+                <span className="text-gray-300">Annual Channel Fees:</span>
+                <span className="font-medium text-white">{formatCurrency(nodeAnnualChannelCost)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Annual Storage ({storageTB} TB):</span>
+                <span className="font-medium text-white">{formatCurrency(nodeAnnualStorageCost)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t border-gray-700">
-                <span className="font-semibold text-white">Total Annual Cost:</span>
-                <span className="font-bold text-white">{formatCurrency(nodeCost + nodeStorageGB * 0.05 * 12)}</span>
+                <span className="font-semibold text-white">Annual Total:</span>
+                <span className="font-bold text-white">{formatCurrency(nodeAnnualTotal)}</span>
+              </div>
+              <div className="flex justify-between pt-3 border-t border-gray-700">
+                <span className="font-semibold text-white">5-Year Total:</span>
+                <span className="font-bold text-white">{formatCurrency(nodeFiveYearTotal)}</span>
               </div>
             </div>
           </div>
-
           <div>
             <h4 className="text-lg font-semibold text-white mb-4">Traditional SCADA</h4>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-300">Annual License & Maintenance:</span>
-                <span className="font-medium text-white">{formatCurrency(scadaCost)}</span>
+                <span className="text-gray-300">Development/Deployment (one-time):</span>
+                <span className="font-medium text-white">{formatCurrency(scadaDevCost)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-300">Annual Storage (1TB):</span>
-                <span className="font-medium text-white">{formatCurrency(scadaStorageGB * 0.40 * 12)}</span>
+                <span className="text-gray-300">Annual Channel Fees:</span>
+                <span className="font-medium text-white">{formatCurrency(scadaAnnualChannelCost)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Annual Storage ({storageTB} TB):</span>
+                <span className="font-medium text-white">{formatCurrency(scadaAnnualStorageCost)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t border-gray-700">
-                <span className="font-semibold text-white">Total Annual Cost:</span>
-                <span className="font-bold text-white">{formatCurrency(scadaCost + scadaStorageGB * 0.40 * 12)}</span>
+                <span className="font-semibold text-white">Annual Total:</span>
+                <span className="font-bold text-white">{formatCurrency(scadaAnnualTotal)}</span>
+              </div>
+              <div className="flex justify-between pt-3 border-t border-gray-700">
+                <span className="font-semibold text-white">5-Year Total:</span>
+                <span className="font-bold text-white">{formatCurrency(scadaFiveYearTotal)}</span>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="mt-6 p-4 bg-blue-900/50 rounded-lg border border-blue-800">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-              <h4 className="text-lg font-semibold text-blue-200">Annual Savings with Node</h4>
-              <p className="text-blue-300">{formatCurrency(savings)} saved per year</p>
-            </div>
+        {/* 5-Year Savings Section */}
+        <div className="mt-8 p-6 bg-green-900/90 border-2 border-green-500 rounded-xl text-center shadow-lg">
+          <h4 className="text-2xl font-extrabold text-green-300 mb-2">5-Year Savings with Node</h4>
+          <div className="text-4xl font-extrabold text-green-400 mb-2">{formatCurrency(savings)}</div>
+          <div className="text-lg text-green-200 mb-4">Total savings over 5 years compared to SCADA</div>
+          <div className="text-base text-green-100 max-w-2xl mx-auto">
+            <span className="font-semibold">How is this calculated?</span> <br />
+            <span>
+              We add up all up-front and annual costs for both systems over 5 years, including hardware, development, channel fees, and storage. Node's simple pricing and lower storage costs mean you save more as you scale.
+            </span>
           </div>
         </div>
       </div>
