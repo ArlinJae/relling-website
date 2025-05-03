@@ -19,30 +19,6 @@ export default function PricingPage() {
   const SCADA_COST_PER_CHANNEL_MEDIUM = 750;
   const SCADA_COST_PER_CHANNEL_LARGE = 650;
 
-  // Generate data points
-  const generateData = (): DataPoint[] => {
-    const data: DataPoint[] = [];
-    const channelCounts = [5, 10, 25, 50, 75, 100, 150, 200, 300, 500, 750, 1000];
-    for (const channels of channelCounts) {
-      // Node cost calculation
-      const nodeCost = NODE_INITIAL_COST + (channels * NODE_COST_PER_CHANNEL);
-      // SCADA cost calculation with different per-channel costs based on scale
-      let scadaPerChannel = SCADA_COST_PER_CHANNEL_SMALL;
-      if (channels > 200) scadaPerChannel = SCADA_COST_PER_CHANNEL_LARGE;
-      else if (channels > 50) scadaPerChannel = SCADA_COST_PER_CHANNEL_MEDIUM;
-      let scadaCost = SCADA_INITIAL_COST + (channels * scadaPerChannel);
-      // Ensure SCADA is never less expensive than Node
-      if (scadaCost < nodeCost) scadaCost = nodeCost;
-      data.push({
-        channels,
-        Node: Math.round(nodeCost),
-        SCADA: Math.round(scadaCost),
-        difference: Math.round(scadaCost - nodeCost)
-      });
-    }
-    return data;
-  };
-
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
       <div className="max-w-5xl mx-auto py-12 px-4 sm:px-8">
