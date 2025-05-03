@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { MagnifyingGlassIcon, PlusIcon, MinusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface Sensor {
   id: string;
@@ -8,6 +9,12 @@ interface Sensor {
   channels: number;
   category: string;
   description: string;
+  commonUses?: string[];
+}
+
+interface SelectedSensor {
+  sensor: Sensor;
+  quantity: number;
 }
 
 interface Machine {
@@ -15,32 +22,61 @@ interface Machine {
   name: string;
   sensors: Sensor[];
   description: string;
+  commonUses?: string[];
+}
+
+interface Preset {
+  id: string;
+  name: string;
+  description: string;
+  sensors: SelectedSensor[];
+  machines: Machine[];
 }
 
 const commonSensors: Sensor[] = [
   // Temperature Sensors
-  { id: 'temp-rtd', name: 'RTD Temperature Sensor', channels: 1, category: 'Temperature', description: 'Resistance Temperature Detector for precise temperature measurement' },
-  { id: 'temp-thermocouple', name: 'Thermocouple', channels: 1, category: 'Temperature', description: 'Temperature sensor for high-temperature applications' },
-  { id: 'temp-ir', name: 'Infrared Temperature Sensor', channels: 1, category: 'Temperature', description: 'Non-contact temperature measurement' },
+  { id: 'temp-rtd', name: 'RTD Temperature Sensor', channels: 1, category: 'Temperature', description: 'Resistance Temperature Detector for precise temperature measurement', commonUses: ['Process monitoring', 'HVAC', 'Industrial ovens'] },
+  { id: 'temp-thermocouple', name: 'Thermocouple', channels: 1, category: 'Temperature', description: 'Temperature sensor for high-temperature applications', commonUses: ['High temp processes', 'Furnaces', 'Heat exchangers'] },
+  { id: 'temp-ir', name: 'Infrared Temperature Sensor', channels: 1, category: 'Temperature', description: 'Non-contact temperature measurement', commonUses: ['Moving parts', 'Hazardous areas', 'Quick measurements'] },
+  { id: 'temp-pt100', name: 'PT100 Temperature Sensor', channels: 1, category: 'Temperature', description: 'High-precision platinum resistance thermometer', commonUses: ['Laboratory', 'Calibration', 'Critical processes'] },
+  { id: 'temp-thermistor', name: 'Thermistor', channels: 1, category: 'Temperature', description: 'Highly sensitive temperature sensor', commonUses: ['Precision control', 'Medical equipment', 'Consumer electronics'] },
   
   // Pressure Sensors
-  { id: 'press-gauge', name: 'Pressure Gauge', channels: 1, category: 'Pressure', description: 'Measures fluid or gas pressure' },
-  { id: 'press-differential', name: 'Differential Pressure Sensor', channels: 2, category: 'Pressure', description: 'Measures pressure difference between two points' },
+  { id: 'press-gauge', name: 'Pressure Gauge', channels: 1, category: 'Pressure', description: 'Measures fluid or gas pressure', commonUses: ['Hydraulic systems', 'Pneumatic systems', 'Process control'] },
+  { id: 'press-differential', name: 'Differential Pressure Sensor', channels: 2, category: 'Pressure', description: 'Measures pressure difference between two points', commonUses: ['Flow measurement', 'Filter monitoring', 'Level measurement'] },
+  { id: 'press-absolute', name: 'Absolute Pressure Sensor', channels: 1, category: 'Pressure', description: 'Measures pressure relative to vacuum', commonUses: ['Weather stations', 'Altitude measurement', 'Vacuum systems'] },
+  { id: 'press-vacuum', name: 'Vacuum Pressure Sensor', channels: 1, category: 'Pressure', description: 'Measures vacuum pressure', commonUses: ['Vacuum chambers', 'Semiconductor manufacturing', 'Medical equipment'] },
   
   // Flow Sensors
-  { id: 'flow-mag', name: 'Magnetic Flow Meter', channels: 2, category: 'Flow', description: 'Measures flow rate of conductive liquids' },
-  { id: 'flow-ultrasonic', name: 'Ultrasonic Flow Meter', channels: 2, category: 'Flow', description: 'Non-invasive flow measurement' },
+  { id: 'flow-mag', name: 'Magnetic Flow Meter', channels: 2, category: 'Flow', description: 'Measures flow rate of conductive liquids', commonUses: ['Water treatment', 'Chemical processing', 'Food & beverage'] },
+  { id: 'flow-ultrasonic', name: 'Ultrasonic Flow Meter', channels: 2, category: 'Flow', description: 'Non-invasive flow measurement', commonUses: ['Large pipes', 'Corrosive fluids', 'Retrofit applications'] },
+  { id: 'flow-turbine', name: 'Turbine Flow Meter', channels: 1, category: 'Flow', description: 'Measures flow using rotating turbine', commonUses: ['Clean liquids', 'Gas measurement', 'Fuel monitoring'] },
+  { id: 'flow-vortex', name: 'Vortex Flow Meter', channels: 1, category: 'Flow', description: 'Measures flow using vortex shedding', commonUses: ['Steam measurement', 'Gas flow', 'High temperature'] },
   
   // Level Sensors
-  { id: 'level-ultrasonic', name: 'Ultrasonic Level Sensor', channels: 1, category: 'Level', description: 'Measures liquid or solid levels' },
-  { id: 'level-radar', name: 'Radar Level Sensor', channels: 1, category: 'Level', description: 'High-precision level measurement' },
+  { id: 'level-ultrasonic', name: 'Ultrasonic Level Sensor', channels: 1, category: 'Level', description: 'Measures liquid or solid levels', commonUses: ['Tanks', 'Silos', 'Open channels'] },
+  { id: 'level-radar', name: 'Radar Level Sensor', channels: 1, category: 'Level', description: 'High-precision level measurement', commonUses: ['Harsh environments', 'Long range', 'Dusty conditions'] },
+  { id: 'level-capacitive', name: 'Capacitive Level Sensor', channels: 1, category: 'Level', description: 'Measures level using capacitance', commonUses: ['Small tanks', 'Conductive liquids', 'Point level'] },
+  { id: 'level-float', name: 'Float Level Sensor', channels: 1, category: 'Level', description: 'Mechanical level measurement', commonUses: ['Simple applications', 'Reliable operation', 'Low cost'] },
   
   // Vibration Sensors
-  { id: 'vib-accelerometer', name: 'Vibration Accelerometer', channels: 3, category: 'Vibration', description: '3-axis vibration measurement' },
+  { id: 'vib-accelerometer', name: 'Vibration Accelerometer', channels: 3, category: 'Vibration', description: '3-axis vibration measurement', commonUses: ['Machine monitoring', 'Predictive maintenance', 'Quality control'] },
+  { id: 'vib-velocity', name: 'Velocity Sensor', channels: 1, category: 'Vibration', description: 'Measures vibration velocity', commonUses: ['Low frequency', 'Long-term monitoring', 'Balancing'] },
+  { id: 'vib-displacement', name: 'Displacement Sensor', channels: 1, category: 'Vibration', description: 'Measures vibration displacement', commonUses: ['Shaft monitoring', 'Clearance measurement', 'Alignment'] },
   
   // Gas Sensors
-  { id: 'gas-co', name: 'CO Sensor', channels: 1, category: 'Gas', description: 'Carbon monoxide detection' },
-  { id: 'gas-o2', name: 'O2 Sensor', channels: 1, category: 'Gas', description: 'Oxygen level measurement' },
+  { id: 'gas-co', name: 'CO Sensor', channels: 1, category: 'Gas', description: 'Carbon monoxide detection', commonUses: ['Safety monitoring', 'Combustion control', 'Indoor air quality'] },
+  { id: 'gas-o2', name: 'O2 Sensor', channels: 1, category: 'Gas', description: 'Oxygen level measurement', commonUses: ['Combustion control', 'Safety monitoring', 'Process control'] },
+  { id: 'gas-co2', name: 'CO2 Sensor', channels: 1, category: 'Gas', description: 'Carbon dioxide measurement', commonUses: ['Indoor air quality', 'Greenhouse control', 'Brewing'] },
+  { id: 'gas-methane', name: 'Methane Sensor', channels: 1, category: 'Gas', description: 'Methane detection', commonUses: ['Safety monitoring', 'Leak detection', 'Process control'] },
+  
+  // Humidity Sensors
+  { id: 'humidity-capacitive', name: 'Capacitive Humidity Sensor', channels: 1, category: 'Humidity', description: 'Measures relative humidity', commonUses: ['HVAC', 'Storage facilities', 'Greenhouses'] },
+  { id: 'humidity-thermal', name: 'Thermal Humidity Sensor', channels: 1, category: 'Humidity', description: 'Measures absolute humidity', commonUses: ['Industrial processes', 'Drying systems', 'Weather stations'] },
+  
+  // Current/Voltage Sensors
+  { id: 'current-ct', name: 'Current Transformer', channels: 1, category: 'Electrical', description: 'Measures AC current', commonUses: ['Power monitoring', 'Energy management', 'Motor control'] },
+  { id: 'voltage-potential', name: 'Voltage Potential Transformer', channels: 1, category: 'Electrical', description: 'Measures AC voltage', commonUses: ['Power monitoring', 'Protection systems', 'Energy management'] },
 ];
 
 const commonMachines: Machine[] = [
@@ -51,8 +87,10 @@ const commonMachines: Machine[] = [
       { id: 'pump-temp', name: 'Bearing Temperature', channels: 2, category: 'Temperature', description: 'Temperature monitoring for pump bearings' },
       { id: 'pump-vib', name: 'Vibration', channels: 3, category: 'Vibration', description: 'Vibration monitoring for pump health' },
       { id: 'pump-flow', name: 'Flow Rate', channels: 1, category: 'Flow', description: 'Pump output flow measurement' },
+      { id: 'pump-current', name: 'Motor Current', channels: 1, category: 'Electrical', description: 'Motor current monitoring' },
     ],
-    description: 'Standard industrial pump with temperature, vibration, and flow monitoring'
+    description: 'Standard industrial pump with temperature, vibration, and flow monitoring',
+    commonUses: ['Water treatment', 'Chemical processing', 'HVAC systems']
   },
   {
     id: 'boiler',
@@ -62,8 +100,10 @@ const commonMachines: Machine[] = [
       { id: 'boiler-pressure', name: 'Steam Pressure', channels: 1, category: 'Pressure', description: 'Steam pressure monitoring' },
       { id: 'boiler-level', name: 'Water Level', channels: 1, category: 'Level', description: 'Boiler water level measurement' },
       { id: 'boiler-gas', name: 'O2 Level', channels: 1, category: 'Gas', description: 'Oxygen level in combustion chamber' },
+      { id: 'boiler-flow', name: 'Feed Water Flow', channels: 1, category: 'Flow', description: 'Feed water flow measurement' },
     ],
-    description: 'Industrial boiler with comprehensive monitoring'
+    description: 'Industrial boiler with comprehensive monitoring',
+    commonUses: ['Power generation', 'Process heating', 'Steam generation']
   },
   {
     id: 'tank',
@@ -73,7 +113,59 @@ const commonMachines: Machine[] = [
       { id: 'tank-temp', name: 'Temperature', channels: 1, category: 'Temperature', description: 'Content temperature monitoring' },
       { id: 'tank-pressure', name: 'Pressure', channels: 1, category: 'Pressure', description: 'Tank pressure monitoring' },
     ],
-    description: 'Standard storage tank with level, temperature, and pressure monitoring'
+    description: 'Standard storage tank with level, temperature, and pressure monitoring',
+    commonUses: ['Chemical storage', 'Fuel storage', 'Process tanks']
+  },
+  {
+    id: 'compressor',
+    name: 'Air Compressor',
+    sensors: [
+      { id: 'comp-temp', name: 'Discharge Temperature', channels: 1, category: 'Temperature', description: 'Compressed air temperature' },
+      { id: 'comp-pressure', name: 'Discharge Pressure', channels: 1, category: 'Pressure', description: 'Compressed air pressure' },
+      { id: 'comp-vib', name: 'Vibration', channels: 3, category: 'Vibration', description: 'Compressor vibration monitoring' },
+      { id: 'comp-current', name: 'Motor Current', channels: 1, category: 'Electrical', description: 'Motor current monitoring' },
+    ],
+    description: 'Industrial air compressor with comprehensive monitoring',
+    commonUses: ['Manufacturing', 'Pneumatic systems', 'Process air']
+  },
+];
+
+const presets: Preset[] = [
+  {
+    id: 'basic-monitoring',
+    name: 'Basic Process Monitoring',
+    description: 'Essential sensors for basic process monitoring',
+    sensors: [
+      { sensor: commonSensors.find(s => s.id === 'temp-rtd')!, quantity: 4 },
+      { sensor: commonSensors.find(s => s.id === 'press-gauge')!, quantity: 2 },
+      { sensor: commonSensors.find(s => s.id === 'level-ultrasonic')!, quantity: 1 },
+    ],
+    machines: []
+  },
+  {
+    id: 'advanced-process',
+    name: 'Advanced Process Control',
+    description: 'Comprehensive monitoring for critical processes',
+    sensors: [
+      { sensor: commonSensors.find(s => s.id === 'temp-pt100')!, quantity: 6 },
+      { sensor: commonSensors.find(s => s.id === 'press-differential')!, quantity: 3 },
+      { sensor: commonSensors.find(s => s.id === 'flow-mag')!, quantity: 2 },
+      { sensor: commonSensors.find(s => s.id === 'level-radar')!, quantity: 2 },
+      { sensor: commonSensors.find(s => s.id === 'vib-accelerometer')!, quantity: 1 },
+    ],
+    machines: [commonMachines.find(m => m.id === 'pump')!]
+  },
+  {
+    id: 'safety-critical',
+    name: 'Safety Critical Systems',
+    description: 'Monitoring for safety-critical applications',
+    sensors: [
+      { sensor: commonSensors.find(s => s.id === 'gas-co')!, quantity: 2 },
+      { sensor: commonSensors.find(s => s.id === 'gas-o2')!, quantity: 2 },
+      { sensor: commonSensors.find(s => s.id === 'press-absolute')!, quantity: 3 },
+      { sensor: commonSensors.find(s => s.id === 'temp-thermocouple')!, quantity: 4 },
+    ],
+    machines: [commonMachines.find(m => m.id === 'boiler')!]
   },
 ];
 
@@ -112,28 +204,81 @@ const calculateCosts = (totalChannels: number): CostCalculation => {
 };
 
 export default function SensorCalculator() {
-  const [selectedSensors, setSelectedSensors] = useState<Sensor[]>([]);
+  const [selectedSensors, setSelectedSensors] = useState<SelectedSensor[]>([]);
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
   const [costs, setCosts] = useState<CostCalculation | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedPreset, setSelectedPreset] = useState<string>('');
+
+  const categories = useMemo(() => 
+    ['all', ...new Set(commonSensors.map(s => s.category))],
+    []
+  );
+
+  const filteredSensors = useMemo(() => {
+    return commonSensors.filter(sensor => {
+      const matchesSearch = sensor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          sensor.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          sensor.commonUses?.some(use => use.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesCategory = selectedCategory === 'all' || sensor.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchTerm, selectedCategory]);
 
   const addSensor = (sensor: Sensor) => {
-    setSelectedSensors([...selectedSensors, sensor]);
+    setSelectedSensors(prev => {
+      const existing = prev.find(s => s.sensor.id === sensor.id);
+      if (existing) {
+        return prev.map(s => 
+          s.sensor.id === sensor.id 
+            ? { ...s, quantity: s.quantity + 1 }
+            : s
+        );
+      }
+      return [...prev, { sensor, quantity: 1 }];
+    });
   };
 
   const removeSensor = (sensorId: string) => {
-    setSelectedSensors(selectedSensors.filter(s => s.id !== sensorId));
+    setSelectedSensors(prev => {
+      const existing = prev.find(s => s.sensor.id === sensorId);
+      if (existing && existing.quantity > 1) {
+        return prev.map(s => 
+          s.sensor.id === sensorId 
+            ? { ...s, quantity: s.quantity - 1 }
+            : s
+        );
+      }
+      return prev.filter(s => s.sensor.id !== sensorId);
+    });
   };
 
   const addMachine = (machine: Machine) => {
-    setSelectedMachines([...selectedMachines, machine]);
+    setSelectedMachines(prev => {
+      if (!prev.find(m => m.id === machine.id)) {
+        return [...prev, machine];
+      }
+      return prev;
+    });
   };
 
   const removeMachine = (machineId: string) => {
-    setSelectedMachines(selectedMachines.filter(m => m.id !== machineId));
+    setSelectedMachines(prev => prev.filter(m => m.id !== machineId));
+  };
+
+  const applyPreset = (presetId: string) => {
+    const preset = presets.find(p => p.id === presetId);
+    if (preset) {
+      setSelectedSensors(preset.sensors);
+      setSelectedMachines(preset.machines);
+      setSelectedPreset(presetId);
+    }
   };
 
   const calculateTotalChannels = () => {
-    const sensorChannels = selectedSensors.reduce((sum, sensor) => sum + sensor.channels, 0);
+    const sensorChannels = selectedSensors.reduce((sum, { sensor, quantity }) => 
+      sum + (sensor.channels * quantity), 0);
     const machineChannels = selectedMachines.reduce((sum, machine) => 
       sum + machine.sensors.reduce((sensorSum, sensor) => sensorSum + sensor.channels, 0), 0);
     return sensorChannels + machineChannels;
@@ -161,24 +306,88 @@ export default function SensorCalculator() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Industrial Sensor Calculator</h2>
       
+      {/* Presets */}
+      <div className="mb-8">
+        <h3 className="text-xl font-semibold mb-4">Quick Start Presets</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {presets.map(preset => (
+            <button
+              key={preset.id}
+              onClick={() => applyPreset(preset.id)}
+              className={`p-4 rounded-lg border ${
+                selectedPreset === preset.id 
+                  ? 'border-blue-500 bg-blue-50' 
+                  : 'border-gray-200 hover:border-blue-300'
+              }`}
+            >
+              <h4 className="font-medium text-left">{preset.name}</h4>
+              <p className="text-sm text-gray-600 text-left">{preset.description}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Available Sensors */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-xl font-semibold mb-4">Available Sensors</h3>
-          <div className="space-y-4">
-            {commonSensors.map(sensor => (
-              <div key={sensor.id} className="border p-4 rounded">
+          
+          {/* Search and Filter */}
+          <div className="mb-4 space-y-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search sensors..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute left-3 top-2.5" />
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              {categories.map(category => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    selectedCategory === category
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-4 max-h-[600px] overflow-y-auto">
+            {filteredSensors.map(sensor => (
+              <div key={sensor.id} className="border p-4 rounded hover:border-blue-300 transition-colors">
                 <div className="flex justify-between items-start">
                   <div>
                     <h4 className="font-medium">{sensor.name}</h4>
                     <p className="text-sm text-gray-600">{sensor.description}</p>
                     <p className="text-sm text-gray-500">Channels: {sensor.channels}</p>
+                    {sensor.commonUses && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">Common Uses:</p>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {sensor.commonUses.map(use => (
+                            <span key={use} className="text-xs bg-gray-100 px-2 py-1 rounded">
+                              {use}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <button
                     onClick={() => addSensor(sensor)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
                   >
-                    Add
+                    <PlusIcon className="h-5 w-5" />
                   </button>
                 </div>
               </div>
@@ -189,25 +398,41 @@ export default function SensorCalculator() {
         {/* Available Machines */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-xl font-semibold mb-4">Available Machines</h3>
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[600px] overflow-y-auto">
             {commonMachines.map(machine => (
-              <div key={machine.id} className="border p-4 rounded">
+              <div key={machine.id} className="border p-4 rounded hover:border-blue-300 transition-colors">
                 <div className="flex justify-between items-start">
                   <div>
                     <h4 className="font-medium">{machine.name}</h4>
                     <p className="text-sm text-gray-600">{machine.description}</p>
-                    <p className="text-sm text-gray-500">
-                      Sensors: {machine.sensors.map(s => s.name).join(', ')}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Total Channels: {machine.sensors.reduce((sum, s) => sum + s.channels, 0)}
-                    </p>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">Sensors:</p>
+                      <ul className="text-sm text-gray-600 list-disc list-inside">
+                        {machine.sensors.map(sensor => (
+                          <li key={sensor.id}>
+                            {sensor.name} ({sensor.channels} channels)
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    {machine.commonUses && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">Common Uses:</p>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {machine.commonUses.map(use => (
+                            <span key={use} className="text-xs bg-gray-100 px-2 py-1 rounded">
+                              {use}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <button
                     onClick={() => addMachine(machine)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
                   >
-                    Add
+                    <PlusIcon className="h-5 w-5" />
                   </button>
                 </div>
               </div>
@@ -221,15 +446,27 @@ export default function SensorCalculator() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium mb-2">Selected Sensors</h4>
-              {selectedSensors.map(sensor => (
+              {selectedSensors.map(({ sensor, quantity }) => (
                 <div key={sensor.id} className="flex justify-between items-center p-2 bg-gray-50 rounded mb-2">
-                  <span>{sensor.name} ({sensor.channels} channels)</span>
-                  <button
-                    onClick={() => removeSensor(sensor.id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Remove
-                  </button>
+                  <div className="flex items-center space-x-2">
+                    <span>{sensor.name}</span>
+                    <span className="text-sm text-gray-500">({sensor.channels} channels × {quantity})</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => removeSensor(sensor.id)}
+                      className="text-red-500 hover:text-red-700 p-1"
+                    >
+                      <MinusIcon className="h-4 w-4" />
+                    </button>
+                    <span className="text-sm font-medium">{quantity}</span>
+                    <button
+                      onClick={() => addSensor(sensor)}
+                      className="text-blue-500 hover:text-blue-700 p-1"
+                    >
+                      <PlusIcon className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -237,12 +474,17 @@ export default function SensorCalculator() {
               <h4 className="font-medium mb-2">Selected Machines</h4>
               {selectedMachines.map(machine => (
                 <div key={machine.id} className="flex justify-between items-center p-2 bg-gray-50 rounded mb-2">
-                  <span>{machine.name} ({machine.sensors.reduce((sum, s) => sum + s.channels, 0)} channels)</span>
+                  <div>
+                    <span>{machine.name}</span>
+                    <span className="text-sm text-gray-500 ml-2">
+                      ({machine.sensors.reduce((sum, s) => sum + s.channels, 0)} channels)
+                    </span>
+                  </div>
                   <button
                     onClick={() => removeMachine(machine.id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 p-1"
                   >
-                    Remove
+                    <XMarkIcon className="h-5 w-5" />
                   </button>
                 </div>
               ))}
