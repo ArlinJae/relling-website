@@ -336,11 +336,6 @@ export default function SensorCalculator() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const categories = useMemo(() => 
-    ['all', ...new Set(commonSensors.map(s => s.category))],
-    []
-  );
-
   const filteredSensors = useMemo(() => {
     return commonSensors.filter(sensor => {
       const matchesSearch = sensor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -379,15 +374,6 @@ export default function SensorCalculator() {
     });
   };
 
-  const addMachine = (machine: Machine) => {
-    setSelectedMachines(prev => {
-      if (!prev.find(m => m.id === machine.id)) {
-        return [...prev, machine];
-      }
-      return prev;
-    });
-  };
-
   const removeMachine = (machineId: string) => {
     setSelectedMachines(prev => prev.filter(m => m.id !== machineId));
   };
@@ -397,20 +383,14 @@ export default function SensorCalculator() {
     setSelectedMachines(preset.machines);
   };
 
-  const calculateTotalChannels = () => {
-    const sensorChannels = selectedSensors.reduce((sum, { sensor, quantity }) => 
-      sum + (sensor.channels * quantity), 0);
-    const machineChannels = selectedMachines.reduce((sum, machine) => 
-      sum + machine.sensors.reduce((sensorSum, sensor) => sensorSum + sensor.channels, 0), 0);
-    return sensorChannels + machineChannels;
-  };
-
-  const updateCosts = () => {
-    const totalChannels = calculateTotalChannels();
-    setCosts(calculateCosts(totalChannels));
-  };
-
   useEffect(() => {
+    const calculateTotalChannels = () => {
+      const sensorChannels = selectedSensors.reduce((sum, { sensor, quantity }) => 
+        sum + (sensor.channels * quantity), 0);
+      const machineChannels = selectedMachines.reduce((sum, machine) => 
+        sum + machine.sensors.reduce((sensorSum, sensor) => sensorSum + sensor.channels, 0), 0);
+      return sensorChannels + machineChannels;
+    };
     const totalChannels = calculateTotalChannels();
     setCosts(calculateCosts(totalChannels));
   }, [selectedSensors, selectedMachines]);
