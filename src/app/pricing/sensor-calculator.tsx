@@ -88,8 +88,9 @@ const commonMachines: Machine[] = [
       { id: 'pump-vib', name: 'Vibration', channels: 3, category: 'Vibration', description: 'Vibration monitoring for pump health' },
       { id: 'pump-flow', name: 'Flow Rate', channels: 1, category: 'Flow', description: 'Pump output flow measurement' },
       { id: 'pump-current', name: 'Motor Current', channels: 1, category: 'Electrical', description: 'Motor current monitoring' },
+      { id: 'pump-pressure', name: 'Suction/Discharge Pressure', channels: 2, category: 'Pressure', description: 'Pump pressure monitoring' },
     ],
-    description: 'Standard industrial pump with temperature, vibration, and flow monitoring',
+    description: 'Standard industrial pump with comprehensive monitoring',
     commonUses: ['Water treatment', 'Chemical processing', 'HVAC systems']
   },
   {
@@ -101,6 +102,8 @@ const commonMachines: Machine[] = [
       { id: 'boiler-level', name: 'Water Level', channels: 1, category: 'Level', description: 'Boiler water level measurement' },
       { id: 'boiler-gas', name: 'O2 Level', channels: 1, category: 'Gas', description: 'Oxygen level in combustion chamber' },
       { id: 'boiler-flow', name: 'Feed Water Flow', channels: 1, category: 'Flow', description: 'Feed water flow measurement' },
+      { id: 'boiler-fuel', name: 'Fuel Flow', channels: 1, category: 'Flow', description: 'Fuel consumption monitoring' },
+      { id: 'boiler-stack', name: 'Stack Temperature', channels: 1, category: 'Temperature', description: 'Exhaust gas temperature' },
     ],
     description: 'Industrial boiler with comprehensive monitoring',
     commonUses: ['Power generation', 'Process heating', 'Steam generation']
@@ -112,6 +115,7 @@ const commonMachines: Machine[] = [
       { id: 'tank-level', name: 'Level Sensor', channels: 1, category: 'Level', description: 'Tank level measurement' },
       { id: 'tank-temp', name: 'Temperature', channels: 1, category: 'Temperature', description: 'Content temperature monitoring' },
       { id: 'tank-pressure', name: 'Pressure', channels: 1, category: 'Pressure', description: 'Tank pressure monitoring' },
+      { id: 'tank-flow', name: 'Inlet/Outlet Flow', channels: 2, category: 'Flow', description: 'Tank flow monitoring' },
     ],
     description: 'Standard storage tank with level, temperature, and pressure monitoring',
     commonUses: ['Chemical storage', 'Fuel storage', 'Process tanks']
@@ -124,49 +128,170 @@ const commonMachines: Machine[] = [
       { id: 'comp-pressure', name: 'Discharge Pressure', channels: 1, category: 'Pressure', description: 'Compressed air pressure' },
       { id: 'comp-vib', name: 'Vibration', channels: 3, category: 'Vibration', description: 'Compressor vibration monitoring' },
       { id: 'comp-current', name: 'Motor Current', channels: 1, category: 'Electrical', description: 'Motor current monitoring' },
+      { id: 'comp-flow', name: 'Air Flow', channels: 1, category: 'Flow', description: 'Compressed air flow measurement' },
+      { id: 'comp-oil', name: 'Oil Temperature', channels: 1, category: 'Temperature', description: 'Lubrication oil temperature' },
     ],
     description: 'Industrial air compressor with comprehensive monitoring',
     commonUses: ['Manufacturing', 'Pneumatic systems', 'Process air']
   },
+  {
+    id: 'chiller',
+    name: 'Industrial Chiller',
+    sensors: [
+      { id: 'chiller-temp', name: 'Water Temperature', channels: 2, category: 'Temperature', description: 'Supply/return water temperature' },
+      { id: 'chiller-pressure', name: 'Refrigerant Pressure', channels: 2, category: 'Pressure', description: 'High/low side pressure' },
+      { id: 'chiller-flow', name: 'Water Flow', channels: 1, category: 'Flow', description: 'Chilled water flow' },
+      { id: 'chiller-current', name: 'Compressor Current', channels: 1, category: 'Electrical', description: 'Compressor motor current' },
+      { id: 'chiller-vib', name: 'Vibration', channels: 3, category: 'Vibration', description: 'Compressor vibration' },
+    ],
+    description: 'Industrial chiller with comprehensive monitoring',
+    commonUses: ['Process cooling', 'HVAC', 'Manufacturing']
+  },
+  {
+    id: 'mixer',
+    name: 'Industrial Mixer',
+    sensors: [
+      { id: 'mixer-temp', name: 'Bearing Temperature', channels: 2, category: 'Temperature', description: 'Bearing temperature monitoring' },
+      { id: 'mixer-vib', name: 'Vibration', channels: 3, category: 'Vibration', description: 'Mixer vibration monitoring' },
+      { id: 'mixer-current', name: 'Motor Current', channels: 1, category: 'Electrical', description: 'Motor current monitoring' },
+      { id: 'mixer-torque', name: 'Torque', channels: 1, category: 'Electrical', description: 'Mixer torque monitoring' },
+    ],
+    description: 'Industrial mixer with comprehensive monitoring',
+    commonUses: ['Chemical processing', 'Food & beverage', 'Pharmaceutical']
+  },
+  {
+    id: 'conveyor',
+    name: 'Industrial Conveyor',
+    sensors: [
+      { id: 'conv-speed', name: 'Speed Sensor', channels: 1, category: 'Electrical', description: 'Conveyor speed monitoring' },
+      { id: 'conv-current', name: 'Motor Current', channels: 1, category: 'Electrical', description: 'Motor current monitoring' },
+      { id: 'conv-temp', name: 'Bearing Temperature', channels: 2, category: 'Temperature', description: 'Bearing temperature monitoring' },
+      { id: 'conv-vib', name: 'Vibration', channels: 3, category: 'Vibration', description: 'Conveyor vibration monitoring' },
+    ],
+    description: 'Industrial conveyor with comprehensive monitoring',
+    commonUses: ['Manufacturing', 'Material handling', 'Packaging']
+  },
+  {
+    id: 'oven',
+    name: 'Industrial Oven',
+    sensors: [
+      { id: 'oven-temp', name: 'Temperature Zones', channels: 4, category: 'Temperature', description: 'Multiple zone temperature monitoring' },
+      { id: 'oven-gas', name: 'Gas Sensors', channels: 2, category: 'Gas', description: 'Combustion gas monitoring' },
+      { id: 'oven-flow', name: 'Air Flow', channels: 1, category: 'Flow', description: 'Air flow monitoring' },
+      { id: 'oven-pressure', name: 'Pressure', channels: 1, category: 'Pressure', description: 'Internal pressure monitoring' },
+    ],
+    description: 'Industrial oven with comprehensive monitoring',
+    commonUses: ['Heat treatment', 'Drying', 'Curing']
+  },
+  {
+    id: 'reactor',
+    name: 'Chemical Reactor',
+    sensors: [
+      { id: 'reactor-temp', name: 'Temperature Zones', channels: 3, category: 'Temperature', description: 'Multiple zone temperature monitoring' },
+      { id: 'reactor-pressure', name: 'Pressure', channels: 1, category: 'Pressure', description: 'Reactor pressure monitoring' },
+      { id: 'reactor-level', name: 'Level', channels: 1, category: 'Level', description: 'Reactor level monitoring' },
+      { id: 'reactor-flow', name: 'Flow', channels: 2, category: 'Flow', description: 'Inlet/outlet flow monitoring' },
+      { id: 'reactor-ph', name: 'pH Sensor', channels: 1, category: 'Electrical', description: 'pH monitoring' },
+    ],
+    description: 'Chemical reactor with comprehensive monitoring',
+    commonUses: ['Chemical processing', 'Pharmaceutical', 'Food & beverage']
+  },
+  {
+    id: 'generator',
+    name: 'Industrial Generator',
+    sensors: [
+      { id: 'gen-voltage', name: 'Voltage', channels: 3, category: 'Electrical', description: 'Three-phase voltage monitoring' },
+      { id: 'gen-current', name: 'Current', channels: 3, category: 'Electrical', description: 'Three-phase current monitoring' },
+      { id: 'gen-temp', name: 'Temperature', channels: 2, category: 'Temperature', description: 'Generator temperature monitoring' },
+      { id: 'gen-vib', name: 'Vibration', channels: 3, category: 'Vibration', description: 'Generator vibration monitoring' },
+      { id: 'gen-flow', name: 'Coolant Flow', channels: 1, category: 'Flow', description: 'Coolant flow monitoring' },
+    ],
+    description: 'Industrial generator with comprehensive monitoring',
+    commonUses: ['Power generation', 'Backup power', 'Cogeneration']
+  }
 ];
 
 const presets: Preset[] = [
   {
-    id: 'basic-monitoring',
+    id: 'basic-process',
     name: 'Basic Process Monitoring',
-    description: 'Essential sensors for basic process monitoring',
+    description: 'Essential sensors for basic process monitoring and control',
     sensors: [
       { sensor: commonSensors.find(s => s.id === 'temp-rtd')!, quantity: 4 },
       { sensor: commonSensors.find(s => s.id === 'press-gauge')!, quantity: 2 },
       { sensor: commonSensors.find(s => s.id === 'level-ultrasonic')!, quantity: 1 },
+      { sensor: commonSensors.find(s => s.id === 'flow-mag')!, quantity: 1 },
     ],
-    machines: []
+    machines: [commonMachines.find(m => m.id === 'pump')!]
   },
   {
     id: 'advanced-process',
     name: 'Advanced Process Control',
-    description: 'Comprehensive monitoring for critical processes',
+    description: 'Comprehensive monitoring for critical processes with high precision',
     sensors: [
       { sensor: commonSensors.find(s => s.id === 'temp-pt100')!, quantity: 6 },
       { sensor: commonSensors.find(s => s.id === 'press-differential')!, quantity: 3 },
       { sensor: commonSensors.find(s => s.id === 'flow-mag')!, quantity: 2 },
       { sensor: commonSensors.find(s => s.id === 'level-radar')!, quantity: 2 },
       { sensor: commonSensors.find(s => s.id === 'vib-accelerometer')!, quantity: 1 },
+      { sensor: commonSensors.find(s => s.id === 'current-ct')!, quantity: 2 },
     ],
-    machines: [commonMachines.find(m => m.id === 'pump')!]
+    machines: [
+      commonMachines.find(m => m.id === 'pump')!,
+      commonMachines.find(m => m.id === 'tank')!
+    ]
   },
   {
     id: 'safety-critical',
     name: 'Safety Critical Systems',
-    description: 'Monitoring for safety-critical applications',
+    description: 'Comprehensive monitoring for safety-critical applications with redundant sensors',
     sensors: [
       { sensor: commonSensors.find(s => s.id === 'gas-co')!, quantity: 2 },
       { sensor: commonSensors.find(s => s.id === 'gas-o2')!, quantity: 2 },
       { sensor: commonSensors.find(s => s.id === 'press-absolute')!, quantity: 3 },
       { sensor: commonSensors.find(s => s.id === 'temp-thermocouple')!, quantity: 4 },
+      { sensor: commonSensors.find(s => s.id === 'level-radar')!, quantity: 2 },
+      { sensor: commonSensors.find(s => s.id === 'vib-accelerometer')!, quantity: 2 },
     ],
-    machines: [commonMachines.find(m => m.id === 'boiler')!]
+    machines: [
+      commonMachines.find(m => m.id === 'boiler')!,
+      commonMachines.find(m => m.id === 'reactor')!
+    ]
   },
+  {
+    id: 'energy-management',
+    name: 'Energy Management System',
+    description: 'Comprehensive monitoring for energy efficiency and management',
+    sensors: [
+      { sensor: commonSensors.find(s => s.id === 'current-ct')!, quantity: 6 },
+      { sensor: commonSensors.find(s => s.id === 'voltage-potential')!, quantity: 3 },
+      { sensor: commonSensors.find(s => s.id === 'temp-rtd')!, quantity: 4 },
+      { sensor: commonSensors.find(s => s.id === 'flow-mag')!, quantity: 2 },
+      { sensor: commonSensors.find(s => s.id === 'press-gauge')!, quantity: 2 },
+    ],
+    machines: [
+      commonMachines.find(m => m.id === 'compressor')!,
+      commonMachines.find(m => m.id === 'chiller')!,
+      commonMachines.find(m => m.id === 'generator')!
+    ]
+  },
+  {
+    id: 'manufacturing-line',
+    name: 'Manufacturing Line',
+    description: 'Comprehensive monitoring for manufacturing processes',
+    sensors: [
+      { sensor: commonSensors.find(s => s.id === 'temp-rtd')!, quantity: 4 },
+      { sensor: commonSensors.find(s => s.id === 'vib-accelerometer')!, quantity: 3 },
+      { sensor: commonSensors.find(s => s.id === 'current-ct')!, quantity: 4 },
+      { sensor: commonSensors.find(s => s.id === 'flow-mag')!, quantity: 2 },
+      { sensor: commonSensors.find(s => s.id === 'press-gauge')!, quantity: 2 },
+    ],
+    machines: [
+      commonMachines.find(m => m.id === 'conveyor')!,
+      commonMachines.find(m => m.id === 'mixer')!,
+      commonMachines.find(m => m.id === 'oven')!
+    ]
+  }
 ];
 
 interface CostCalculation {
