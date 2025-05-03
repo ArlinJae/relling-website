@@ -383,6 +383,15 @@ export default function SensorCalculator() {
     setSelectedMachines(preset.machines);
   };
 
+  const addMachine = (machine: Machine) => {
+    setSelectedMachines(prev => {
+      if (!prev.find(m => m.id === machine.id)) {
+        return [...prev, machine];
+      }
+      return prev;
+    });
+  };
+
   useEffect(() => {
     const calculateTotalChannels = () => {
       const sensorChannels = selectedSensors.reduce((sum, { sensor, quantity }) => 
@@ -531,10 +540,10 @@ export default function SensorCalculator() {
       <div>
         <h3 className="text-lg font-semibold text-white mb-4">Available Machines</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {selectedMachines.map((machine) => (
+          {commonMachines.map((machine) => (
             <button
               key={machine.id}
-              onClick={() => removeMachine(machine.id)}
+              onClick={() => addMachine(machine)}
               className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg text-left transition-colors border border-gray-700"
             >
               <div className="flex justify-between items-start mb-2">
