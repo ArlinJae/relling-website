@@ -255,7 +255,7 @@ export default function PricingPage() {
             </ul>
             <div className="flex flex-col md:flex-row gap-8 items-center justify-between">
               <div className="flex-1">
-                <p className="mb-2 text-gray-300">Node's pricing is simple and transparent. SCADA systems often have hidden costs and require custom engineering.</p>
+                <p className="mb-2 text-gray-300">Node&apos;s pricing is simple and transparent. SCADA systems often have hidden costs and require custom engineering.</p>
                 <p className="mb-2 text-gray-300">All costs below are calculated for a 5-year period, including up-front and annual fees.</p>
                 <p className="mb-2 text-gray-300">Savings are <span className="font-bold text-green-400">guaranteed</span> for most use cases.</p>
               </div>
@@ -274,9 +274,9 @@ export default function PricingPage() {
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <h2 className="text-2xl font-bold mb-4 text-white">How the Savings Add Up</h2>
             <ul className="list-disc pl-6 text-gray-300 space-y-2 mb-4">
-              <li><span className="font-semibold text-blue-300">No custom programming:</span> Node's setup is plug-and-play, saving weeks of engineering time.</li>
+              <li><span className="font-semibold text-blue-300">No custom programming:</span> Node&apos;s setup is plug-and-play, saving weeks of engineering time.</li>
               <li><span className="font-semibold text-blue-300">No hidden fees:</span> All costs are shown up front. No surprise maintenance or license bills.</li>
-              <li><span className="font-semibold text-blue-300">Lower storage costs:</span> Node's cloud storage is <span className="font-bold">over 10x cheaper</span> than typical SCADA vendors.</li>
+              <li><span className="font-semibold text-blue-300">Lower storage costs:</span> Node&apos;s cloud storage is <span className="font-bold">over 10x cheaper</span> than typical SCADA vendors.</li>
               <li><span className="font-semibold text-blue-300">Simple scaling:</span> Add channels or machines at a flat, predictable rate.</li>
             </ul>
             <div className="bg-blue-900/60 border border-blue-800 rounded-lg p-4 text-center">

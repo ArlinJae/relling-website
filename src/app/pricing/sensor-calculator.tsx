@@ -565,7 +565,7 @@ export default function SensorCalculator() {
           <div className="text-base text-green-100 max-w-2xl mx-auto">
             <span className="font-semibold">How is this calculated?</span> <br />
             <span>
-              We add up all up-front and annual costs for both systems over 5 years, including hardware, development, channel fees, and storage. Node's simple pricing and lower storage costs mean you save more as you scale.
+              We add up all up-front and annual costs for both systems over 5 years, including hardware, development, channel fees, and storage. Node&apos;s simple pricing and lower storage costs mean you save more as you scale.
             </span>
           </div>
         </div>
