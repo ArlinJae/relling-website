@@ -1,7 +1,7 @@
 // FULL DARK MODE ENFORCED
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { PlusIcon, MinusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface Sensor {
@@ -295,40 +295,6 @@ const presets: Preset[] = [
   }
 ];
 
-interface CostCalculation {
-  totalChannels: number;
-  nodeCost: number;
-  scadaCost: number;
-  savings: number;
-}
-
-const calculateCosts = (totalChannels: number): CostCalculation => {
-  const NODE_INITIAL_COST = 6000;
-  const NODE_COST_PER_CHANNEL = 150;
-  const SCADA_INITIAL_COST = 45000;
-  const SCADA_LICENSE_COST = 15000;
-  
-  let scadaChannelCost;
-  if (totalChannels <= 50) {
-    scadaChannelCost = totalChannels * 250;
-  } else if (totalChannels <= 150) {
-    scadaChannelCost = totalChannels * 120;
-  } else {
-    scadaChannelCost = totalChannels * 180;
-  }
-  
-  const integrationFactor = 1 + (totalChannels / 1000) * 1.2;
-  const nodeCost = NODE_INITIAL_COST + (totalChannels * NODE_COST_PER_CHANNEL);
-  const scadaCost = SCADA_INITIAL_COST + SCADA_LICENSE_COST + (scadaChannelCost * integrationFactor);
-  
-  return {
-    totalChannels,
-    nodeCost: Math.round(nodeCost),
-    scadaCost: Math.round(scadaCost),
-    savings: Math.round(scadaCost - nodeCost)
-  };
-};
-
 export default function SensorCalculator() {
   const [selectedSensors, setSelectedSensors] = useState<SelectedSensor[]>([]);
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
@@ -395,11 +361,6 @@ export default function SensorCalculator() {
   const nodeAnnual = (totalChannels * 150) + 50;
   const scadaAnnual = 23000 + 5000;
   const annualSavings = scadaAnnual - nodeAnnual;
-
-  const calculateSavingsPercentage = () => {
-    if (annualSavings === 0) return 0;
-    return Math.round((annualSavings / scadaAnnual) * 100);
-  };
 
   const formatCurrency = (value: number | undefined) => {
     if (value === undefined) return '$0';
