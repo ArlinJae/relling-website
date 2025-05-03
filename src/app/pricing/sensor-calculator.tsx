@@ -38,46 +38,54 @@ const commonSensors: Sensor[] = [
   // Temperature Sensors
   { id: 'temp-rtd', name: 'RTD Temperature Sensor', channels: 1, category: 'Temperature', description: 'Resistance Temperature Detector for precise temperature measurement', commonUses: ['Process monitoring', 'HVAC', 'Industrial ovens'] },
   { id: 'temp-thermocouple', name: 'Thermocouple', channels: 1, category: 'Temperature', description: 'Temperature sensor for high-temperature applications', commonUses: ['High temp processes', 'Furnaces', 'Heat exchangers'] },
-  { id: 'temp-ir', name: 'Infrared Temperature Sensor', channels: 1, category: 'Temperature', description: 'Non-contact temperature measurement', commonUses: ['Moving parts', 'Hazardous areas', 'Quick measurements'] },
+  { id: 'temp-thermocouple-array', name: '8-Channel Thermocouple Array', channels: 8, category: 'Temperature', description: 'Array for multi-point temperature monitoring', commonUses: ['Kilns', 'Large ovens', 'Thermal profiling'] },
   { id: 'temp-pt100', name: 'PT100 Temperature Sensor', channels: 1, category: 'Temperature', description: 'High-precision platinum resistance thermometer', commonUses: ['Laboratory', 'Calibration', 'Critical processes'] },
   { id: 'temp-thermistor', name: 'Thermistor', channels: 1, category: 'Temperature', description: 'Highly sensitive temperature sensor', commonUses: ['Precision control', 'Medical equipment', 'Consumer electronics'] },
+  { id: 'temp-array-32', name: '32-Channel Temperature DAQ', channels: 32, category: 'Temperature', description: 'High-density temperature data acquisition', commonUses: ['Battery testing', 'Thermal mapping', 'R&D'] },
   
   // Pressure Sensors
   { id: 'press-gauge', name: 'Pressure Gauge', channels: 1, category: 'Pressure', description: 'Measures fluid or gas pressure', commonUses: ['Hydraulic systems', 'Pneumatic systems', 'Process control'] },
   { id: 'press-differential', name: 'Differential Pressure Sensor', channels: 2, category: 'Pressure', description: 'Measures pressure difference between two points', commonUses: ['Flow measurement', 'Filter monitoring', 'Level measurement'] },
   { id: 'press-absolute', name: 'Absolute Pressure Sensor', channels: 1, category: 'Pressure', description: 'Measures pressure relative to vacuum', commonUses: ['Weather stations', 'Altitude measurement', 'Vacuum systems'] },
   { id: 'press-vacuum', name: 'Vacuum Pressure Sensor', channels: 1, category: 'Pressure', description: 'Measures vacuum pressure', commonUses: ['Vacuum chambers', 'Semiconductor manufacturing', 'Medical equipment'] },
+  { id: 'press-array-16', name: '16-Channel Pressure Array', channels: 16, category: 'Pressure', description: 'Multi-point pressure monitoring', commonUses: ['Pipeline', 'Large process vessels', 'Hydraulic systems'] },
   
   // Flow Sensors
   { id: 'flow-mag', name: 'Magnetic Flow Meter', channels: 2, category: 'Flow', description: 'Measures flow rate of conductive liquids', commonUses: ['Water treatment', 'Chemical processing', 'Food & beverage'] },
   { id: 'flow-ultrasonic', name: 'Ultrasonic Flow Meter', channels: 2, category: 'Flow', description: 'Non-invasive flow measurement', commonUses: ['Large pipes', 'Corrosive fluids', 'Retrofit applications'] },
   { id: 'flow-turbine', name: 'Turbine Flow Meter', channels: 1, category: 'Flow', description: 'Measures flow using rotating turbine', commonUses: ['Clean liquids', 'Gas measurement', 'Fuel monitoring'] },
   { id: 'flow-vortex', name: 'Vortex Flow Meter', channels: 1, category: 'Flow', description: 'Measures flow using vortex shedding', commonUses: ['Steam measurement', 'Gas flow', 'High temperature'] },
+  { id: 'flow-array-8', name: '8-Channel Flow DAQ', channels: 8, category: 'Flow', description: 'Multi-point flow monitoring', commonUses: ['Water distribution', 'Process lines', 'Large systems'] },
   
   // Level Sensors
   { id: 'level-ultrasonic', name: 'Ultrasonic Level Sensor', channels: 1, category: 'Level', description: 'Measures liquid or solid levels', commonUses: ['Tanks', 'Silos', 'Open channels'] },
   { id: 'level-radar', name: 'Radar Level Sensor', channels: 1, category: 'Level', description: 'High-precision level measurement', commonUses: ['Harsh environments', 'Long range', 'Dusty conditions'] },
   { id: 'level-capacitive', name: 'Capacitive Level Sensor', channels: 1, category: 'Level', description: 'Measures level using capacitance', commonUses: ['Small tanks', 'Conductive liquids', 'Point level'] },
   { id: 'level-float', name: 'Float Level Sensor', channels: 1, category: 'Level', description: 'Mechanical level measurement', commonUses: ['Simple applications', 'Reliable operation', 'Low cost'] },
+  { id: 'level-array-12', name: '12-Channel Level Array', channels: 12, category: 'Level', description: 'Multi-point level monitoring', commonUses: ['Large tanks', 'Reservoirs', 'Process plants'] },
   
   // Vibration Sensors
   { id: 'vib-accelerometer', name: 'Vibration Accelerometer', channels: 3, category: 'Vibration', description: '3-axis vibration measurement', commonUses: ['Machine monitoring', 'Predictive maintenance', 'Quality control'] },
   { id: 'vib-velocity', name: 'Velocity Sensor', channels: 1, category: 'Vibration', description: 'Measures vibration velocity', commonUses: ['Low frequency', 'Long-term monitoring', 'Balancing'] },
   { id: 'vib-displacement', name: 'Displacement Sensor', channels: 1, category: 'Vibration', description: 'Measures vibration displacement', commonUses: ['Shaft monitoring', 'Clearance measurement', 'Alignment'] },
+  { id: 'vib-array-16', name: '16-Channel Vibration Array', channels: 16, category: 'Vibration', description: 'Multi-point vibration monitoring', commonUses: ['Rotating equipment', 'Large machines', 'Condition monitoring'] },
   
   // Gas Sensors
   { id: 'gas-co', name: 'CO Sensor', channels: 1, category: 'Gas', description: 'Carbon monoxide detection', commonUses: ['Safety monitoring', 'Combustion control', 'Indoor air quality'] },
   { id: 'gas-o2', name: 'O2 Sensor', channels: 1, category: 'Gas', description: 'Oxygen level measurement', commonUses: ['Combustion control', 'Safety monitoring', 'Process control'] },
   { id: 'gas-co2', name: 'CO2 Sensor', channels: 1, category: 'Gas', description: 'Carbon dioxide measurement', commonUses: ['Indoor air quality', 'Greenhouse control', 'Brewing'] },
   { id: 'gas-methane', name: 'Methane Sensor', channels: 1, category: 'Gas', description: 'Methane detection', commonUses: ['Safety monitoring', 'Leak detection', 'Process control'] },
+  { id: 'gas-array-8', name: '8-Channel Gas DAQ', channels: 8, category: 'Gas', description: 'Multi-point gas monitoring', commonUses: ['Environmental', 'Process safety', 'Large facilities'] },
   
   // Humidity Sensors
   { id: 'humidity-capacitive', name: 'Capacitive Humidity Sensor', channels: 1, category: 'Humidity', description: 'Measures relative humidity', commonUses: ['HVAC', 'Storage facilities', 'Greenhouses'] },
   { id: 'humidity-thermal', name: 'Thermal Humidity Sensor', channels: 1, category: 'Humidity', description: 'Measures absolute humidity', commonUses: ['Industrial processes', 'Drying systems', 'Weather stations'] },
+  { id: 'humidity-array-8', name: '8-Channel Humidity DAQ', channels: 8, category: 'Humidity', description: 'Multi-point humidity monitoring', commonUses: ['Warehouses', 'Greenhouses', 'Large buildings'] },
   
   // Current/Voltage Sensors
   { id: 'current-ct', name: 'Current Transformer', channels: 1, category: 'Electrical', description: 'Measures AC current', commonUses: ['Power monitoring', 'Energy management', 'Motor control'] },
   { id: 'voltage-potential', name: 'Voltage Potential Transformer', channels: 1, category: 'Electrical', description: 'Measures AC voltage', commonUses: ['Power monitoring', 'Protection systems', 'Energy management'] },
+  { id: 'daq-32', name: '32-Channel Universal DAQ', channels: 32, category: 'Electrical', description: 'High-density universal data acquisition', commonUses: ['Test labs', 'R&D', 'Large systems'] },
 ];
 
 const commonMachines: Machine[] = [
@@ -299,17 +307,15 @@ export default function SensorCalculator() {
   const [selectedSensors, setSelectedSensors] = useState<SelectedSensor[]>([]);
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const filteredSensors = useMemo(() => {
     return commonSensors.filter(sensor => {
       const matchesSearch = sensor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           sensor.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           sensor.commonUses?.some(use => use.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesCategory = selectedCategory === 'all' || sensor.category === selectedCategory;
-      return matchesSearch && matchesCategory;
+      return matchesSearch;
     });
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm]);
 
   const addSensor = (sensor: Sensor) => {
     setSelectedSensors(prev => {
@@ -363,8 +369,8 @@ export default function SensorCalculator() {
   let scadaPerChannel = 1000;
   if (totalChannels > 200) scadaPerChannel = 650;
   else if (totalChannels > 50) scadaPerChannel = 750;
-  const scadaCost = totalChannels * scadaPerChannel;
-  const savings = scadaCost - nodeCost;
+  const scadaCost = 30000 + (totalChannels * scadaPerChannel);
+  const savings = Math.max(scadaCost - nodeCost, 0);
 
   const formatCurrency = (value: number | undefined) => {
     if (value === undefined) return '$0';
@@ -395,7 +401,7 @@ export default function SensorCalculator() {
         </div>
       </div>
 
-      {/* Search and Filter Section */}
+      {/* Search Section */}
       <div className="mb-8">
         <div className="flex flex-col md:flex-row gap-4 mb-4">
           <div className="flex-1">
@@ -406,21 +412,6 @@ export default function SensorCalculator() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {['All', 'Temperature', 'Pressure', 'Flow', 'Level', 'Vibration', 'Power', 'Other'].map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category === 'All' ? 'all' : category)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-                  selectedCategory === (category === 'All' ? 'all' : category)
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
           </div>
         </div>
       </div>

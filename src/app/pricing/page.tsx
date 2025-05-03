@@ -14,39 +14,26 @@ interface DataPoint {
 const CostComparisonChart = () => {
   // Constants for cost calculations
   const NODE_INITIAL_COST = 6000;
-  const NODE_COST_PER_CHANNEL = 150;
-  
-  // SCADA cost model - more expensive initial setup, lower per-channel costs at mid-range, very expensive at scale
-  const SCADA_INITIAL_COST = 45000;
-  const SCADA_LICENSE_COST = 15000; // Annual license 
-  const SCADA_COST_PER_CHANNEL_SMALL = 250; // More expensive per channel initially
-  const SCADA_COST_PER_CHANNEL_MEDIUM = 120; // Cheaper in the mid-range
-  const SCADA_COST_PER_CHANNEL_LARGE = 180; // Expensive at scale (implementation complexity)
-  const SCADA_INTEGRATION_COST_FACTOR = 1.2; // Additional cost factor as scale increases
+  const NODE_COST_PER_CHANNEL = 200;
+  const SCADA_INITIAL_COST = 30000;
+  const SCADA_COST_PER_CHANNEL_SMALL = 1000;
+  const SCADA_COST_PER_CHANNEL_MEDIUM = 750;
+  const SCADA_COST_PER_CHANNEL_LARGE = 650;
 
   // Generate data points
   const generateData = (): DataPoint[] => {
     const data: DataPoint[] = [];
     const channelCounts = [5, 10, 25, 50, 75, 100, 150, 200, 300, 500, 750, 1000];
-    
     for (const channels of channelCounts) {
       // Node cost calculation
       const nodeCost = NODE_INITIAL_COST + (channels * NODE_COST_PER_CHANNEL);
-      
       // SCADA cost calculation with different per-channel costs based on scale
-      let scadaChannelCost;
-      if (channels <= 50) {
-        scadaChannelCost = channels * SCADA_COST_PER_CHANNEL_SMALL;
-      } else if (channels <= 150) {
-        scadaChannelCost = channels * SCADA_COST_PER_CHANNEL_MEDIUM;
-      } else {
-        scadaChannelCost = channels * SCADA_COST_PER_CHANNEL_LARGE;
-      }
-      
-      // Add increasing integration costs as scale increases
-      const integrationFactor = 1 + (channels / 1000) * SCADA_INTEGRATION_COST_FACTOR;
-      const scadaCost = SCADA_INITIAL_COST + SCADA_LICENSE_COST + (scadaChannelCost * integrationFactor);
-      
+      let scadaPerChannel = SCADA_COST_PER_CHANNEL_SMALL;
+      if (channels > 200) scadaPerChannel = SCADA_COST_PER_CHANNEL_LARGE;
+      else if (channels > 50) scadaPerChannel = SCADA_COST_PER_CHANNEL_MEDIUM;
+      let scadaCost = SCADA_INITIAL_COST + (channels * scadaPerChannel);
+      // Ensure SCADA is never less expensive than Node
+      if (scadaCost < nodeCost) scadaCost = nodeCost;
       data.push({
         channels,
         Node: Math.round(nodeCost),
@@ -54,7 +41,6 @@ const CostComparisonChart = () => {
         difference: Math.round(scadaCost - nodeCost)
       });
     }
-    
     return data;
   };
 
