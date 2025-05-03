@@ -66,7 +66,7 @@ const CostComparisonChart = () => {
   };
 
   return (
-    <div className="w-full bg-gray-800">
+    <div className="w-full bg-gray-900 rounded-lg p-2 sm:p-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-white mb-2">Node vs SCADA: Annual Cost Comparison</h2>
         <p className="text-gray-300">
@@ -129,7 +129,7 @@ const CostComparisonChart = () => {
         </ResponsiveContainer>
       </div>
       
-      <div className="mt-6 bg-gray-700 p-4 rounded-lg">
+      <div className="mt-6 bg-gray-800 p-4 rounded-lg">
         <h3 className="text-lg font-bold text-white mb-2">Key Insights:</h3>
         <ul className="list-disc pl-6 space-y-1">
           <li className="text-gray-300">

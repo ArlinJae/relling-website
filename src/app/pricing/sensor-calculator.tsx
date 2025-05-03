@@ -1,7 +1,8 @@
+// FULL DARK MODE ENFORCED
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { MagnifyingGlassIcon, PlusIcon, MinusIcon, XMarkIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MinusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface Sensor {
   id: string;
@@ -334,7 +335,6 @@ export default function SensorCalculator() {
   const [costs, setCosts] = useState<CostCalculation | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedPreset, setSelectedPreset] = useState<string>('');
 
   const categories = useMemo(() => 
     ['all', ...new Set(commonSensors.map(s => s.category))],
@@ -395,7 +395,6 @@ export default function SensorCalculator() {
   const applyPreset = (preset: Preset) => {
     setSelectedSensors(preset.sensors);
     setSelectedMachines(preset.machines);
-    setSelectedPreset(preset.id);
   };
 
   const calculateTotalChannels = () => {
@@ -412,8 +411,9 @@ export default function SensorCalculator() {
   };
 
   useEffect(() => {
-    updateCosts();
-  }, [selectedSensors, selectedMachines, updateCosts]);
+    const totalChannels = calculateTotalChannels();
+    setCosts(calculateCosts(totalChannels));
+  }, [selectedSensors, selectedMachines]);
 
   const calculateSavingsPercentage = () => {
     if (!costs) return 0;
