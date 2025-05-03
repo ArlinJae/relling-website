@@ -67,6 +67,9 @@ const commonSensors: Sensor[] = [
   { id: 'pressure-transmitter', name: 'Pressure Transmitter', channels: 1, category: 'Pressure', description: 'Industrial pressure measurement' },
   { id: 'temp-probe', name: 'Temperature Probe', channels: 1, category: 'Temperature', description: 'General temperature monitoring' },
   { id: 'humidity-sensor', name: 'Humidity Sensor', channels: 1, category: 'Humidity', description: 'Ambient humidity' },
+  { id: 'orifice-plate', name: 'Orifice Plate Flow Meter', channels: 1, category: 'Flow', description: 'Differential pressure flow measurement' },
+  { id: 'magnetostrictive-level', name: 'Magnetostrictive Level Sensor', channels: 1, category: 'Level', description: 'High-accuracy level measurement' },
+  { id: 'chlorine-sensor', name: 'Chlorine Sensor', channels: 1, category: 'Chemical', description: 'Chlorine concentration' },
   // ...add more as needed
 ];
 
@@ -454,12 +457,12 @@ export default function SensorCalculator() {
       {/* Available Sensors Section */}
       <div className="mb-8">
         <h3 className="text-lg font-semibold text-white mb-4">Available Sensors</h3>
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {filteredSensors.map((sensor) => (
             <button
               key={sensor.id}
               onClick={() => addSensor(sensor)}
-              className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg text-left transition-colors border border-gray-700"
+              className="p-4 bg-gray-800 hover:bg-gray-700 rounded-lg text-left transition-colors border border-gray-700 mb-6"
             >
               <div className="flex justify-between items-start mb-2">
                 <h4 className="font-medium text-white">{sensor.name} <span className="inline-block bg-blue-800 text-blue-200 text-xs font-bold px-2 py-1 rounded-full ml-2">{sensor.channels} channels</span></h4>
