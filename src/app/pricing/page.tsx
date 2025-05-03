@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import SensorCalculator from './sensor-calculator';
 
 interface DataPoint {
   channels: number;
@@ -65,7 +66,7 @@ const CostComparisonChart = () => {
   };
 
   return (
-    <div className="w-full h-full p-4 bg-white">
+    <div className="w-full bg-white">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Node vs SCADA: Annual Cost Comparison</h2>
         <p className="text-gray-600">
@@ -73,7 +74,7 @@ const CostComparisonChart = () => {
         </p>
       </div>
       
-      <div className="h-80">
+      <div className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
@@ -130,14 +131,133 @@ const CostComparisonChart = () => {
           </li>
         </ul>
       </div>
+
+      {/* Software Pricing Section */}
+      <div className="mt-8 bg-white p-6 rounded-lg shadow">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">Software & Storage Pricing</h3>
+        
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="text-lg font-semibold text-gray-800 mb-3">Node Storage</h4>
+            <div className="space-y-2">
+              <p className="text-gray-700">
+                <span className="font-medium">$0.050 per GB/month</span>
+                <span className="text-sm text-gray-500 ml-2">(117% markup on AWS S3)</span>
+              </p>
+              <ul className="list-disc pl-5 space-y-1 text-gray-600">
+                <li>No separate historian database license needed</li>
+                <li>Built-in cloud redundancy</li>
+                <li>Unlimited retention period</li>
+                <li>Pay only for storage used</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="text-lg font-semibold text-gray-800 mb-3">Traditional SCADA Storage</h4>
+            <div className="space-y-2">
+              <p className="text-gray-700">
+                <span className="font-medium">$15,000-30,000</span>
+                <span className="text-sm text-gray-500 ml-2">(Historian license)</span>
+              </p>
+              <ul className="list-disc pl-5 space-y-1 text-gray-600">
+                <li>Additional historian database license required</li>
+                <li>Separate storage infrastructure needed</li>
+                <li>Limited retention periods</li>
+                <li>Higher maintenance costs</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ROI Analysis Section */}
+      <div className="mt-8 bg-white p-6 rounded-lg shadow">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">5-Year ROI Analysis (35-Channel System)</h3>
+        
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="text-lg font-semibold text-gray-800 mb-3">Traditional SCADA</h4>
+            <ul className="space-y-2">
+              <li className="flex justify-between">
+                <span className="text-gray-600">Initial Investment:</span>
+                <span className="font-medium">$45,000</span>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-gray-600">Annual Maintenance (5 years):</span>
+                <span className="font-medium">$40,000</span>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-gray-600">Support Costs (5 years):</span>
+                <span className="font-medium">$50,000</span>
+              </li>
+              <li className="flex justify-between pt-2 border-t">
+                <span className="font-semibold">Total 5-Year Cost:</span>
+                <span className="font-bold">$135,000</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="text-lg font-semibold text-gray-800 mb-3">Node</h4>
+            <ul className="space-y-2">
+              <li className="flex justify-between">
+                <span className="text-gray-600">Initial Investment:</span>
+                <span className="font-medium">$6,000</span>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-gray-600">Annual Channel Fees (5 years):</span>
+                <span className="font-medium">$26,250</span>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-gray-600">Data Storage (10TB):</span>
+                <span className="font-medium">$4,680</span>
+              </li>
+              <li className="flex justify-between pt-2 border-t">
+                <span className="font-semibold">Total 5-Year Cost:</span>
+                <span className="font-bold">$36,930</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-6 bg-blue-50 p-4 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-lg font-semibold text-blue-800">Total Savings with Node</h4>
+              <p className="text-blue-600">73% reduction in total cost of ownership</p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-blue-800">$98,070</p>
+              <p className="text-sm text-blue-600">saved over 5 years</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default function Page() {
   return (
-    <main className="min-h-screen bg-white">
-      <CostComparisonChart />
+    <main className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Pricing & Cost Comparison</h1>
+        
+        <div className="mb-12 bg-white p-6 rounded-lg shadow">
+          <CostComparisonChart />
+        </div>
+        
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Calculate Your Specific Costs</h2>
+            <p className="text-gray-600">
+              Select your industrial sensors and machines to see a detailed cost comparison between Node and traditional SCADA systems.
+            </p>
+          </div>
+          <SensorCalculator />
+        </div>
+      </div>
     </main>
   );
 } 
