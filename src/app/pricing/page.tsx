@@ -141,8 +141,8 @@ const CostComparisonChart = () => {
             <h4 className="text-lg font-semibold text-gray-800 mb-3">Node Storage</h4>
             <div className="space-y-2">
               <p className="text-gray-700">
-                <span className="font-medium">$0.039 per GB/month</span>
-                <span className="text-sm text-gray-500 ml-2">(70% markup on AWS S3)</span>
+                <span className="font-medium">$0.050 per GB/month</span>
+                <span className="text-sm text-gray-500 ml-2">(117% markup on AWS S3)</span>
               </p>
               <ul className="list-disc pl-5 space-y-1 text-gray-600">
                 <li>No separate historian database license needed</li>
