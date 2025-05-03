@@ -16,7 +16,7 @@ export default function PricingPage() {
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
             <h2 className="text-2xl font-bold mb-4 text-white">Cost Comparison: Node vs. SCADA</h2>
             <ul className="mb-6 space-y-2">
-              <li><span className="font-semibold text-blue-300">Node:</span> <span className="text-white">$6,000 hardware up front per machine, $200/channel/year, $600/TB/year storage</span></li>
+              <li><span className="font-semibold text-blue-300">Node:</span> <span className="text-white">$6,000 hardware up front per machine, $200/channel/year, $0.05/GB/month storage ($50/TB/year)</span></li>
               <li><span className="font-semibold text-pink-300">SCADA:</span> <span className="text-white">$30,000 up front, $1,000/$750/$650/channel/year (tiered), $70/TB/year storage</span></li>
               <li><span className="font-semibold text-yellow-300">Storage:</span> <span className="text-white">1 TB per 6 sensors (rounded up)</span></li>
             </ul>

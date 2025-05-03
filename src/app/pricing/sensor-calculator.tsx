@@ -349,7 +349,7 @@ export default function SensorCalculator() {
   // Node
   const nodeHardwareCost = numMachines * 6000;
   const nodeAnnualChannelCost = totalChannels.total * 200;
-  const nodeAnnualStorageCost = storageTB * 600;
+  const nodeAnnualStorageCost = storageTB * 50;
   const nodeAnnualTotal = nodeAnnualChannelCost + nodeAnnualStorageCost;
   const nodeFiveYearTotal = nodeHardwareCost + (nodeAnnualTotal * 5);
   // SCADA
@@ -558,14 +558,14 @@ export default function SensorCalculator() {
           </div>
         </div>
         {/* 5-Year Savings Section */}
-        <div className="mt-8 p-6 bg-green-900/90 border-2 border-green-500 rounded-xl text-center shadow-lg">
-          <h4 className="text-2xl font-extrabold text-green-300 mb-2">5-Year Savings with Node</h4>
-          <div className="text-4xl font-extrabold text-green-400 mb-2">{formatCurrency(savings)}</div>
-          <div className="text-lg text-green-200 mb-4">Total savings over 5 years compared to SCADA</div>
-          <div className="text-base text-green-100 max-w-2xl mx-auto">
+        <div className="mt-8 p-6 bg-gray-700 rounded-xl text-center shadow-lg">
+          <h4 className="text-2xl font-extrabold text-gray-300 mb-2">5-Year Savings with Node</h4>
+          <div className="text-4xl font-extrabold text-gray-400 mb-2">{formatCurrency(savings)}</div>
+          <div className="text-lg text-gray-200 mb-4">Total savings over 5 years compared to SCADA</div>
+          <div className="text-base text-gray-100 max-w-2xl mx-auto">
             <span className="font-semibold">How is this calculated?</span> <br />
             <span>
-              We add up all up-front and annual costs for both systems over 5 years, including hardware, development, channel fees, and storage. Node&apos;s simple pricing and lower storage costs mean you save more as you scale.
+              We add up all up-front and annual costs for both systems over 5 years, including hardware, development, channel fees, and storage. Node's simple pricing and lower storage costs mean you save more as you scale.
             </span>
           </div>
         </div>
