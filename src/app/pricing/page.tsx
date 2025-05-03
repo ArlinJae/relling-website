@@ -66,7 +66,7 @@ const CostComparisonChart = () => {
   };
 
   return (
-    <div className="w-full h-full p-4 bg-white">
+    <div className="w-full bg-white">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Node vs SCADA: Annual Cost Comparison</h2>
         <p className="text-gray-600">
@@ -74,7 +74,7 @@ const CostComparisonChart = () => {
         </p>
       </div>
       
-      <div className="h-80">
+      <div className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
@@ -137,19 +137,21 @@ const CostComparisonChart = () => {
 
 export default function Page() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Pricing & Cost Comparison</h1>
         
-        <div className="mb-12">
+        <div className="mb-12 bg-white p-6 rounded-lg shadow">
           <CostComparisonChart />
         </div>
         
-        <div className="border-t pt-12">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Calculate Your Specific Costs</h2>
-          <p className="text-gray-600 mb-8">
-            Select your industrial sensors and machines to see a detailed cost comparison between Node and traditional SCADA systems.
-          </p>
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Calculate Your Specific Costs</h2>
+            <p className="text-gray-600">
+              Select your industrial sensors and machines to see a detailed cost comparison between Node and traditional SCADA systems.
+            </p>
+          </div>
           <SensorCalculator />
         </div>
       </div>
