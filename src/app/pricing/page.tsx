@@ -60,18 +60,18 @@ export default function Page() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={data}
-                margin={{ top: 20, right: 30, left: 30, bottom: 10 }}
+                margin={{ top: 40, right: 30, left: 50, bottom: 40 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis 
                   dataKey="channels" 
-                  label={{ value: 'Number of Channels/Sensors', position: 'bottom', offset: 0 }}
+                  label={{ value: 'Number of Channels/Sensors', position: 'insideBottom', offset: -10 }}
                   stroke="#9CA3AF"
                   tick={{ fill: '#9CA3AF' }}
                 />
                 <YAxis 
                   tickFormatter={(tick) => `$${(tick/1000).toFixed(0)}k`}
-                  label={{ value: 'Annual Cost (USD)', angle: -90, position: 'insideLeft' }}
+                  label={{ value: 'Annual Cost (USD)', angle: -90, position: 'insideLeft', offset: 20 }}
                   stroke="#9CA3AF"
                   tick={{ fill: '#9CA3AF' }}
                 />

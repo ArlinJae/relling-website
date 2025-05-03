@@ -285,6 +285,29 @@ const presets: Preset[] = [
       commonMachines.find(m => m.id === 'mixer')!,
       commonMachines.find(m => m.id === 'oven')!
     ]
+  },
+  {
+    id: 'full-scale-rd-factory',
+    name: 'Full-Scale R&D Factory',
+    description: 'Comprehensive monitoring for a large R&D manufacturing facility',
+    sensors: [
+      { sensor: commonSensors.find(s => s.id === 'temp-array-32')!, quantity: 4 },
+      { sensor: commonSensors.find(s => s.id === 'press-array-16')!, quantity: 3 },
+      { sensor: commonSensors.find(s => s.id === 'flow-array-8')!, quantity: 3 },
+      { sensor: commonSensors.find(s => s.id === 'vib-array-16')!, quantity: 2 },
+      { sensor: commonSensors.find(s => s.id === 'current-ct')!, quantity: 10 },
+      { sensor: commonSensors.find(s => s.id === 'humidity-array-8')!, quantity: 2 },
+      { sensor: commonSensors.find(s => s.id === 'ph-array-8')!, quantity: 1 },
+      { sensor: commonSensors.find(s => s.id === 'light-array-16')!, quantity: 1 },
+    ],
+    machines: [
+      commonMachines.find(m => m.id === 'pump')!,
+      commonMachines.find(m => m.id === 'boiler')!,
+      commonMachines.find(m => m.id === 'compressor')!,
+      commonMachines.find(m => m.id === 'chiller')!,
+      commonMachines.find(m => m.id === 'conveyor')!,
+      commonMachines.find(m => m.id === 'generator')!,
+    ]
   }
 ];
 
@@ -483,7 +506,7 @@ export default function SensorCalculator() {
       {/* Available Machines Section */}
       <div>
         <h3 className="text-lg font-semibold text-white mb-4">Available Machines</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {commonMachines.map((machine) => (
             <button
               key={machine.id}
