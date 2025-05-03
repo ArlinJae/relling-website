@@ -3,22 +3,7 @@
 import React from 'react';
 import SensorCalculator from './sensor-calculator';
 
-interface DataPoint {
-  channels: number;
-  Node: number;
-  SCADA: number;
-  difference: number;
-}
-
 export default function PricingPage() {
-  // Constants for cost calculations
-  const NODE_INITIAL_COST = 6000;
-  const NODE_COST_PER_CHANNEL = 200;
-  const SCADA_INITIAL_COST = 30000;
-  const SCADA_COST_PER_CHANNEL_SMALL = 1000;
-  const SCADA_COST_PER_CHANNEL_MEDIUM = 750;
-  const SCADA_COST_PER_CHANNEL_LARGE = 650;
-
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
       <div className="max-w-5xl mx-auto py-12 px-4 sm:px-8">
