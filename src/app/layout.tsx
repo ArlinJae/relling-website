@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navigation from "./components/Navigation";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -21,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth bg-black">
       <body className={`${inter.className} min-h-screen bg-black overflow-x-hidden antialiased`}>
-        <Navigation />
+        {/* <Navigation /> Removed for pricing page */}
         {children}
       </body>
     </html>
