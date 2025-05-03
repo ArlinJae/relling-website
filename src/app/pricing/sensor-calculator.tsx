@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { MagnifyingGlassIcon, PlusIcon, MinusIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, PlusIcon, MinusIcon, XMarkIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface Sensor {
   id: string;
@@ -333,7 +333,7 @@ export default function SensorCalculator() {
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
   const [costs, setCosts] = useState<CostCalculation | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedPreset, setSelectedPreset] = useState<string>('');
 
   const categories = useMemo(() => 
@@ -392,13 +392,10 @@ export default function SensorCalculator() {
     setSelectedMachines(prev => prev.filter(m => m.id !== machineId));
   };
 
-  const applyPreset = (presetId: string) => {
-    const preset = presets.find(p => p.id === presetId);
-    if (preset) {
-      setSelectedSensors(preset.sensors);
-      setSelectedMachines(preset.machines);
-      setSelectedPreset(presetId);
-    }
+  const applyPreset = (preset: Preset) => {
+    setSelectedSensors(preset.sensors);
+    setSelectedMachines(preset.machines);
+    setSelectedPreset(preset.id);
   };
 
   const calculateTotalChannels = () => {
@@ -418,7 +415,13 @@ export default function SensorCalculator() {
     updateCosts();
   }, [selectedSensors, selectedMachines, updateCosts]);
 
-  const formatCurrency = (value: number) => {
+  const calculateSavingsPercentage = () => {
+    if (!costs) return 0;
+    return Math.round((costs.savings / costs.scadaCost) * 100);
+  };
+
+  const formatCurrency = (value: number | undefined) => {
+    if (value === undefined) return '$0';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -428,219 +431,211 @@ export default function SensorCalculator() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Industrial Sensor Calculator</h2>
-      
-      {/* Presets */}
+    <div className="p-6">
+      {/* Presets Section */}
       <div className="mb-8">
-        <h3 className="text-xl font-semibold mb-4">Quick Start Presets</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {presets.map(preset => (
+        <h3 className="text-lg font-semibold text-white mb-4">Quick Start Presets</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {presets.map((preset) => (
             <button
-              key={preset.id}
-              onClick={() => applyPreset(preset.id)}
-              className={`p-4 rounded-lg border ${
-                selectedPreset === preset.id 
-                  ? 'border-blue-500 bg-blue-50' 
-                  : 'border-gray-200 hover:border-blue-300'
-              }`}
+              key={preset.name}
+              onClick={() => applyPreset(preset)}
+              className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors border border-gray-600"
             >
-              <h4 className="font-medium text-left">{preset.name}</h4>
-              <p className="text-sm text-gray-600 text-left">{preset.description}</p>
+              <h4 className="font-medium text-white mb-1">{preset.name}</h4>
+              <p className="text-sm text-gray-300">{preset.description}</p>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Available Sensors */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-xl font-semibold mb-4">Available Sensors</h3>
-          
-          {/* Search and Filter */}
-          <div className="mb-4 space-y-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search sensors..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute left-3 top-2.5" />
-            </div>
-            
-            <div className="flex flex-wrap gap-2">
-              {categories.map(category => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-3 py-1 rounded-full text-sm ${
-                    selectedCategory === category
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
-                </button>
-              ))}
-            </div>
+      {/* Search and Filter Section */}
+      <div className="mb-8">
+        <div className="flex flex-col md:flex-row gap-4 mb-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Search sensors..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {['All', 'Temperature', 'Pressure', 'Flow', 'Level', 'Vibration', 'Power', 'Other'].map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category === 'All' ? null : category)}
+                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
+                  selectedCategory === (category === 'All' ? null : category)
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-          <div className="space-y-4 max-h-[600px] overflow-y-auto">
-            {filteredSensors.map(sensor => (
-              <div key={sensor.id} className="border p-4 rounded hover:border-blue-300 transition-colors">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-medium">{sensor.name}</h4>
-                    <p className="text-sm text-gray-600">{sensor.description}</p>
-                    <p className="text-sm text-gray-500">Channels: {sensor.channels}</p>
-                    {sensor.commonUses && (
-                      <div className="mt-2">
-                        <p className="text-sm text-gray-500">Common Uses:</p>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {sensor.commonUses.map(use => (
-                            <span key={use} className="text-xs bg-gray-100 px-2 py-1 rounded">
-                              {use}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+      {/* Selected Items Section */}
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold text-white mb-4">Selected Sensors & Machines</h3>
+        <div className="space-y-4">
+          {selectedSensors.map(({ sensor, quantity }) => (
+            <div key={sensor.id} className="flex items-center justify-between p-4 bg-gray-700 rounded-lg border border-gray-600">
+              <div>
+                <h4 className="font-medium text-white">{sensor.name}</h4>
+                <p className="text-sm text-gray-300">{sensor.channels} channels</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => removeSensor(sensor.id)}
+                    className="p-1 rounded-lg bg-gray-600 hover:bg-gray-500 text-white"
+                  >
+                    <MinusIcon className="h-4 w-4" />
+                  </button>
+                  <span className="text-white font-medium">{quantity}</span>
                   <button
                     onClick={() => addSensor(sensor)}
-                    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+                    className="p-1 rounded-lg bg-gray-600 hover:bg-gray-500 text-white"
                   >
-                    <PlusIcon className="h-5 w-5" />
+                    <PlusIcon className="h-4 w-4" />
                   </button>
                 </div>
+                <button
+                  onClick={() => removeSensor(sensor.id)}
+                  className="p-1 rounded-lg bg-red-600/20 hover:bg-red-600/30 text-red-400"
+                >
+                  <TrashIcon className="h-5 w-5" />
+                </button>
               </div>
-            ))}
+            </div>
+          ))}
+          {selectedSensors.length === 0 && (
+            <p className="text-gray-400 text-center py-4">No sensors selected</p>
+          )}
+        </div>
+      </div>
+
+      {/* Available Sensors Section */}
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold text-white mb-4">Available Sensors</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredSensors.map((sensor) => (
+            <button
+              key={sensor.id}
+              onClick={() => addSensor(sensor)}
+              className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors border border-gray-600"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-medium text-white">{sensor.name}</h4>
+                <span className="text-sm text-gray-400">{sensor.channels} channels</span>
+              </div>
+              <p className="text-sm text-gray-300 mb-2">{sensor.description}</p>
+              <div className="flex flex-wrap gap-2">
+                {sensor.commonUses?.map((use) => (
+                  <span key={use} className="text-xs px-2 py-1 bg-gray-600 rounded-full text-gray-300">
+                    {use}
+                  </span>
+                ))}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Available Machines Section */}
+      <div>
+        <h3 className="text-lg font-semibold text-white mb-4">Available Machines</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {selectedMachines.map((machine) => (
+            <button
+              key={machine.id}
+              onClick={() => removeMachine(machine.id)}
+              className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors border border-gray-600"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-medium text-white">{machine.name}</h4>
+                <span className="text-sm text-gray-400">{machine.sensors.reduce((sum, s) => sum + s.channels, 0)} channels</span>
+              </div>
+              <p className="text-sm text-gray-300 mb-2">{machine.description}</p>
+              <div className="flex flex-wrap gap-2">
+                {machine.sensors.map((sensor) => (
+                  <span key={sensor.id} className="text-xs px-2 py-1 bg-gray-600 rounded-full text-gray-300">
+                    {sensor.name}
+                  </span>
+                ))}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Cost Summary Section */}
+      <div className="mt-8 p-6 bg-gray-800 rounded-lg border border-gray-700">
+        <h3 className="text-xl font-bold text-white mb-6">Cost Summary</h3>
+        
+        <div className="grid md:grid-cols-2 gap-8">
+          <div>
+            <h4 className="text-lg font-semibold text-white mb-4">Node</h4>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-300">Initial Investment:</span>
+                <span className="font-medium text-white">$6,000</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Annual Channel Fees:</span>
+                <span className="font-medium text-white">{formatCurrency((costs?.totalChannels || 0) * 150)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Data Storage (10TB):</span>
+                <span className="font-medium text-white">$4,680</span>
+              </div>
+              <div className="flex justify-between pt-3 border-t border-gray-600">
+                <span className="font-semibold text-white">Total 5-Year Cost:</span>
+                <span className="font-bold text-white">{formatCurrency((costs?.nodeCost || 0) + 4680)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-semibold text-white mb-4">Traditional SCADA</h4>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-300">Initial Investment:</span>
+                <span className="font-medium text-white">$45,000</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Annual Maintenance:</span>
+                <span className="font-medium text-white">$8,000</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Support Costs:</span>
+                <span className="font-medium text-white">$10,000</span>
+              </div>
+              <div className="flex justify-between pt-3 border-t border-gray-600">
+                <span className="font-semibold text-white">Total 5-Year Cost:</span>
+                <span className="font-bold text-white">{formatCurrency((costs?.scadaCost || 0) + 8000 + 10000)}</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Available Machines */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-xl font-semibold mb-4">Available Machines</h3>
-          <div className="space-y-4 max-h-[600px] overflow-y-auto">
-            {commonMachines.map(machine => (
-              <div key={machine.id} className="border p-4 rounded hover:border-blue-300 transition-colors">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-medium">{machine.name}</h4>
-                    <p className="text-sm text-gray-600">{machine.description}</p>
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">Sensors:</p>
-                      <ul className="text-sm text-gray-600 list-disc list-inside">
-                        {machine.sensors.map(sensor => (
-                          <li key={sensor.id}>
-                            {sensor.name} ({sensor.channels} channels)
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    {machine.commonUses && (
-                      <div className="mt-2">
-                        <p className="text-sm text-gray-500">Common Uses:</p>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {machine.commonUses.map(use => (
-                            <span key={use} className="text-xs bg-gray-100 px-2 py-1 rounded">
-                              {use}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => addMachine(machine)}
-                    className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-                  >
-                    <PlusIcon className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Selected Items */}
-        <div className="bg-white p-6 rounded-lg shadow md:col-span-2">
-          <h3 className="text-xl font-semibold mb-4">Selected Items</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mt-6 p-4 bg-blue-900/50 rounded-lg border border-blue-800">
+          <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-medium mb-2">Selected Sensors</h4>
-              {selectedSensors.map(({ sensor, quantity }) => (
-                <div key={sensor.id} className="flex justify-between items-center p-2 bg-gray-50 rounded mb-2">
-                  <div className="flex items-center space-x-2">
-                    <span>{sensor.name}</span>
-                    <span className="text-sm text-gray-500">({sensor.channels} channels × {quantity})</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => removeSensor(sensor.id)}
-                      className="text-red-500 hover:text-red-700 p-1"
-                    >
-                      <MinusIcon className="h-4 w-4" />
-                    </button>
-                    <span className="text-sm font-medium">{quantity}</span>
-                    <button
-                      onClick={() => addSensor(sensor)}
-                      className="text-blue-500 hover:text-blue-700 p-1"
-                    >
-                      <PlusIcon className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+              <h4 className="text-lg font-semibold text-blue-200">Total Savings with Node</h4>
+              <p className="text-blue-300">{calculateSavingsPercentage()}% reduction in total cost of ownership</p>
             </div>
-            <div>
-              <h4 className="font-medium mb-2">Selected Machines</h4>
-              {selectedMachines.map(machine => (
-                <div key={machine.id} className="flex justify-between items-center p-2 bg-gray-50 rounded mb-2">
-                  <div>
-                    <span>{machine.name}</span>
-                    <span className="text-sm text-gray-500 ml-2">
-                      ({machine.sensors.reduce((sum, s) => sum + s.channels, 0)} channels)
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => removeMachine(machine.id)}
-                    className="text-red-500 hover:text-red-700 p-1"
-                  >
-                    <XMarkIcon className="h-5 w-5" />
-                  </button>
-                </div>
-              ))}
+            <div className="text-right">
+              <p className="text-2xl font-bold text-blue-200">{formatCurrency(costs?.savings)}</p>
+              <p className="text-sm text-blue-300">saved over 5 years</p>
             </div>
           </div>
         </div>
-
-        {/* Cost Comparison */}
-        {costs && (
-          <div className="bg-white p-6 rounded-lg shadow md:col-span-2">
-            <h3 className="text-xl font-semibold mb-4">Cost Comparison</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 bg-blue-50 rounded">
-                <h4 className="font-medium text-blue-800">Total Channels</h4>
-                <p className="text-2xl font-bold text-blue-900">{costs.totalChannels}</p>
-              </div>
-              <div className="p-4 bg-green-50 rounded">
-                <h4 className="font-medium text-green-800">Node Cost</h4>
-                <p className="text-2xl font-bold text-green-900">{formatCurrency(costs.nodeCost)}</p>
-              </div>
-              <div className="p-4 bg-red-50 rounded">
-                <h4 className="font-medium text-red-800">SCADA Cost</h4>
-                <p className="text-2xl font-bold text-red-900">{formatCurrency(costs.scadaCost)}</p>
-              </div>
-            </div>
-            <div className="mt-4 p-4 bg-gray-50 rounded">
-              <h4 className="font-medium text-gray-800">Potential Savings with Node</h4>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(costs.savings)}</p>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
