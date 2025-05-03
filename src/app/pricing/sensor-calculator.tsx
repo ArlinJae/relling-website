@@ -35,57 +35,37 @@ interface Preset {
 }
 
 const commonSensors: Sensor[] = [
-  // Temperature Sensors
-  { id: 'temp-rtd', name: 'RTD Temperature Sensor', channels: 1, category: 'Temperature', description: 'Resistance Temperature Detector for precise temperature measurement', commonUses: ['Process monitoring', 'HVAC', 'Industrial ovens'] },
-  { id: 'temp-thermocouple', name: 'Thermocouple', channels: 1, category: 'Temperature', description: 'Temperature sensor for high-temperature applications', commonUses: ['High temp processes', 'Furnaces', 'Heat exchangers'] },
-  { id: 'temp-thermocouple-array', name: '8-Channel Thermocouple Array', channels: 8, category: 'Temperature', description: 'Array for multi-point temperature monitoring', commonUses: ['Kilns', 'Large ovens', 'Thermal profiling'] },
-  { id: 'temp-pt100', name: 'PT100 Temperature Sensor', channels: 1, category: 'Temperature', description: 'High-precision platinum resistance thermometer', commonUses: ['Laboratory', 'Calibration', 'Critical processes'] },
-  { id: 'temp-thermistor', name: 'Thermistor', channels: 1, category: 'Temperature', description: 'Highly sensitive temperature sensor', commonUses: ['Precision control', 'Medical equipment', 'Consumer electronics'] },
-  { id: 'temp-array-32', name: '32-Channel Temperature DAQ', channels: 32, category: 'Temperature', description: 'High-density temperature data acquisition', commonUses: ['Battery testing', 'Thermal mapping', 'R&D'] },
-  
-  // Pressure Sensors
-  { id: 'press-gauge', name: 'Pressure Gauge', channels: 1, category: 'Pressure', description: 'Measures fluid or gas pressure', commonUses: ['Hydraulic systems', 'Pneumatic systems', 'Process control'] },
-  { id: 'press-differential', name: 'Differential Pressure Sensor', channels: 2, category: 'Pressure', description: 'Measures pressure difference between two points', commonUses: ['Flow measurement', 'Filter monitoring', 'Level measurement'] },
-  { id: 'press-absolute', name: 'Absolute Pressure Sensor', channels: 1, category: 'Pressure', description: 'Measures pressure relative to vacuum', commonUses: ['Weather stations', 'Altitude measurement', 'Vacuum systems'] },
-  { id: 'press-vacuum', name: 'Vacuum Pressure Sensor', channels: 1, category: 'Pressure', description: 'Measures vacuum pressure', commonUses: ['Vacuum chambers', 'Semiconductor manufacturing', 'Medical equipment'] },
-  { id: 'press-array-16', name: '16-Channel Pressure Array', channels: 16, category: 'Pressure', description: 'Multi-point pressure monitoring', commonUses: ['Pipeline', 'Large process vessels', 'Hydraulic systems'] },
-  
-  // Flow Sensors
-  { id: 'flow-mag', name: 'Magnetic Flow Meter', channels: 2, category: 'Flow', description: 'Measures flow rate of conductive liquids', commonUses: ['Water treatment', 'Chemical processing', 'Food & beverage'] },
-  { id: 'flow-ultrasonic', name: 'Ultrasonic Flow Meter', channels: 2, category: 'Flow', description: 'Non-invasive flow measurement', commonUses: ['Large pipes', 'Corrosive fluids', 'Retrofit applications'] },
-  { id: 'flow-turbine', name: 'Turbine Flow Meter', channels: 1, category: 'Flow', description: 'Measures flow using rotating turbine', commonUses: ['Clean liquids', 'Gas measurement', 'Fuel monitoring'] },
-  { id: 'flow-vortex', name: 'Vortex Flow Meter', channels: 1, category: 'Flow', description: 'Measures flow using vortex shedding', commonUses: ['Steam measurement', 'Gas flow', 'High temperature'] },
-  { id: 'flow-array-8', name: '8-Channel Flow DAQ', channels: 8, category: 'Flow', description: 'Multi-point flow monitoring', commonUses: ['Water distribution', 'Process lines', 'Large systems'] },
-  
-  // Level Sensors
-  { id: 'level-ultrasonic', name: 'Ultrasonic Level Sensor', channels: 1, category: 'Level', description: 'Measures liquid or solid levels', commonUses: ['Tanks', 'Silos', 'Open channels'] },
-  { id: 'level-radar', name: 'Radar Level Sensor', channels: 1, category: 'Level', description: 'High-precision level measurement', commonUses: ['Harsh environments', 'Long range', 'Dusty conditions'] },
-  { id: 'level-capacitive', name: 'Capacitive Level Sensor', channels: 1, category: 'Level', description: 'Measures level using capacitance', commonUses: ['Small tanks', 'Conductive liquids', 'Point level'] },
-  { id: 'level-float', name: 'Float Level Sensor', channels: 1, category: 'Level', description: 'Mechanical level measurement', commonUses: ['Simple applications', 'Reliable operation', 'Low cost'] },
-  { id: 'level-array-12', name: '12-Channel Level Array', channels: 12, category: 'Level', description: 'Multi-point level monitoring', commonUses: ['Large tanks', 'Reservoirs', 'Process plants'] },
-  
-  // Vibration Sensors
-  { id: 'vib-accelerometer', name: 'Vibration Accelerometer', channels: 3, category: 'Vibration', description: '3-axis vibration measurement', commonUses: ['Machine monitoring', 'Predictive maintenance', 'Quality control'] },
-  { id: 'vib-velocity', name: 'Velocity Sensor', channels: 1, category: 'Vibration', description: 'Measures vibration velocity', commonUses: ['Low frequency', 'Long-term monitoring', 'Balancing'] },
-  { id: 'vib-displacement', name: 'Displacement Sensor', channels: 1, category: 'Vibration', description: 'Measures vibration displacement', commonUses: ['Shaft monitoring', 'Clearance measurement', 'Alignment'] },
-  { id: 'vib-array-16', name: '16-Channel Vibration Array', channels: 16, category: 'Vibration', description: 'Multi-point vibration monitoring', commonUses: ['Rotating equipment', 'Large machines', 'Condition monitoring'] },
-  
-  // Gas Sensors
-  { id: 'gas-co', name: 'CO Sensor', channels: 1, category: 'Gas', description: 'Carbon monoxide detection', commonUses: ['Safety monitoring', 'Combustion control', 'Indoor air quality'] },
-  { id: 'gas-o2', name: 'O2 Sensor', channels: 1, category: 'Gas', description: 'Oxygen level measurement', commonUses: ['Combustion control', 'Safety monitoring', 'Process control'] },
-  { id: 'gas-co2', name: 'CO2 Sensor', channels: 1, category: 'Gas', description: 'Carbon dioxide measurement', commonUses: ['Indoor air quality', 'Greenhouse control', 'Brewing'] },
-  { id: 'gas-methane', name: 'Methane Sensor', channels: 1, category: 'Gas', description: 'Methane detection', commonUses: ['Safety monitoring', 'Leak detection', 'Process control'] },
-  { id: 'gas-array-8', name: '8-Channel Gas DAQ', channels: 8, category: 'Gas', description: 'Multi-point gas monitoring', commonUses: ['Environmental', 'Process safety', 'Large facilities'] },
-  
-  // Humidity Sensors
-  { id: 'humidity-capacitive', name: 'Capacitive Humidity Sensor', channels: 1, category: 'Humidity', description: 'Measures relative humidity', commonUses: ['HVAC', 'Storage facilities', 'Greenhouses'] },
-  { id: 'humidity-thermal', name: 'Thermal Humidity Sensor', channels: 1, category: 'Humidity', description: 'Measures absolute humidity', commonUses: ['Industrial processes', 'Drying systems', 'Weather stations'] },
-  { id: 'humidity-array-8', name: '8-Channel Humidity DAQ', channels: 8, category: 'Humidity', description: 'Multi-point humidity monitoring', commonUses: ['Warehouses', 'Greenhouses', 'Large buildings'] },
-  
-  // Current/Voltage Sensors
-  { id: 'current-ct', name: 'Current Transformer', channels: 1, category: 'Electrical', description: 'Measures AC current', commonUses: ['Power monitoring', 'Energy management', 'Motor control'] },
-  { id: 'voltage-potential', name: 'Voltage Potential Transformer', channels: 1, category: 'Electrical', description: 'Measures AC voltage', commonUses: ['Power monitoring', 'Protection systems', 'Energy management'] },
-  { id: 'daq-32', name: '32-Channel Universal DAQ', channels: 32, category: 'Electrical', description: 'High-density universal data acquisition', commonUses: ['Test labs', 'R&D', 'Large systems'] },
+  { id: 'temp-rtd', name: 'RTD Temperature Sensor', channels: 1, category: 'Temperature', description: 'Precision temperature measurement' },
+  { id: 'temp-thermocouple', name: 'Thermocouple', channels: 1, category: 'Temperature', description: 'High-temp applications' },
+  { id: 'temp-array-8', name: '8-Channel Thermocouple Array', channels: 8, category: 'Temperature', description: 'Multi-point temperature monitoring' },
+  { id: 'temp-array-32', name: '32-Channel Temp DAQ', channels: 32, category: 'Temperature', description: 'High-density temperature DAQ' },
+  { id: 'press-gauge', name: 'Pressure Gauge', channels: 1, category: 'Pressure', description: 'Fluid/gas pressure' },
+  { id: 'press-array-16', name: '16-Channel Pressure Array', channels: 16, category: 'Pressure', description: 'Multi-point pressure' },
+  { id: 'flow-mag', name: 'Magnetic Flow Meter', channels: 2, category: 'Flow', description: 'Conductive liquid flow' },
+  { id: 'flow-array-8', name: '8-Channel Flow DAQ', channels: 8, category: 'Flow', description: 'Multi-point flow' },
+  { id: 'level-ultrasonic', name: 'Ultrasonic Level Sensor', channels: 1, category: 'Level', description: 'Liquid/solid level' },
+  { id: 'level-array-12', name: '12-Channel Level Array', channels: 12, category: 'Level', description: 'Multi-point level' },
+  { id: 'vib-accelerometer', name: '3-Axis Vibration Accelerometer', channels: 3, category: 'Vibration', description: '3-axis vibration' },
+  { id: 'vib-array-16', name: '16-Channel Vibration Array', channels: 16, category: 'Vibration', description: 'Multi-point vibration' },
+  { id: 'gas-co', name: 'CO Sensor', channels: 1, category: 'Gas', description: 'Carbon monoxide' },
+  { id: 'gas-array-8', name: '8-Channel Gas DAQ', channels: 8, category: 'Gas', description: 'Multi-point gas' },
+  { id: 'humidity-capacitive', name: 'Capacitive Humidity Sensor', channels: 1, category: 'Humidity', description: 'Relative humidity' },
+  { id: 'humidity-array-8', name: '8-Channel Humidity DAQ', channels: 8, category: 'Humidity', description: 'Multi-point humidity' },
+  { id: 'current-ct', name: 'Current Transformer', channels: 1, category: 'Electrical', description: 'AC current' },
+  { id: 'daq-32', name: '32-Channel Universal DAQ', channels: 32, category: 'Electrical', description: 'Universal DAQ' },
+  { id: 'strain-gauge', name: 'Strain Gauge', channels: 1, category: 'Strain', description: 'Strain measurement' },
+  { id: 'strain-array-16', name: '16-Channel Strain Array', channels: 16, category: 'Strain', description: 'Multi-point strain' },
+  { id: 'load-cell', name: 'Load Cell', channels: 1, category: 'Force', description: 'Force/load measurement' },
+  { id: 'load-array-8', name: '8-Channel Load Cell Array', channels: 8, category: 'Force', description: 'Multi-point force' },
+  { id: 'ph-sensor', name: 'pH Sensor', channels: 1, category: 'Chemical', description: 'pH measurement' },
+  { id: 'ph-array-8', name: '8-Channel pH Array', channels: 8, category: 'Chemical', description: 'Multi-point pH' },
+  { id: 'torque-sensor', name: 'Torque Sensor', channels: 1, category: 'Mechanical', description: 'Torque measurement' },
+  { id: 'torque-array-8', name: '8-Channel Torque Array', channels: 8, category: 'Mechanical', description: 'Multi-point torque' },
+  { id: 'light-sensor', name: 'Light Sensor', channels: 1, category: 'Optical', description: 'Light intensity' },
+  { id: 'light-array-16', name: '16-Channel Light Array', channels: 16, category: 'Optical', description: 'Multi-point light' },
+  { id: 'sound-sensor', name: 'Sound Sensor', channels: 1, category: 'Acoustic', description: 'Sound level' },
+  { id: 'sound-array-8', name: '8-Channel Sound Array', channels: 8, category: 'Acoustic', description: 'Multi-point sound' },
+  // ...add more as needed
 ];
 
 const commonMachines: Machine[] = [
@@ -362,14 +342,16 @@ export default function SensorCalculator() {
   const totalChannels = (() => {
     const sensorChannels = selectedSensors.reduce((sum, { sensor, quantity }) => sum + (sensor.channels * quantity), 0);
     const machineChannels = selectedMachines.reduce((sum, machine) => sum + machine.sensors.reduce((sensorSum, sensor) => sensorSum + sensor.channels, 0), 0);
-    return sensorChannels + machineChannels;
+    return { total: sensorChannels + machineChannels, machineChannels };
   })();
   const numMachines = selectedMachines.length;
-  const nodeCost = (numMachines * 6000) + (totalChannels * 200);
+  const nodeStorageGB = Math.ceil((selectedSensors.length + totalChannels.machineChannels) / 6);
+  const scadaStorageGB = nodeStorageGB;
+  const nodeCost = (numMachines * 6000) + (totalChannels.total * 200) + (nodeStorageGB * 0.05 * 12);
   let scadaPerChannel = 1000;
-  if (totalChannels > 200) scadaPerChannel = 650;
-  else if (totalChannels > 50) scadaPerChannel = 750;
-  const scadaCost = 30000 + (totalChannels * scadaPerChannel);
+  if (totalChannels.total > 200) scadaPerChannel = 650;
+  else if (totalChannels.total > 50) scadaPerChannel = 750;
+  const scadaCost = 30000 + (totalChannels.total * scadaPerChannel) + (scadaStorageGB * 0.40 * 12);
   const savings = Math.max(scadaCost - nodeCost, 0);
 
   const formatCurrency = (value: number | undefined) => {
@@ -460,7 +442,7 @@ export default function SensorCalculator() {
       {/* Available Sensors Section */}
       <div className="mb-8">
         <h3 className="text-lg font-semibold text-white mb-4">Available Sensors</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-4">
           {filteredSensors.map((sensor) => (
             <button
               key={sensor.id}
@@ -525,11 +507,11 @@ export default function SensorCalculator() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-300">Annual Storage (1TB):</span>
-                <span className="font-medium text-white">{formatCurrency(50)}</span>
+                <span className="font-medium text-white">{formatCurrency(nodeStorageGB * 0.05 * 12)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t border-gray-700">
                 <span className="font-semibold text-white">Total Annual Cost:</span>
-                <span className="font-bold text-white">{formatCurrency(nodeCost + 50)}</span>
+                <span className="font-bold text-white">{formatCurrency(nodeCost + nodeStorageGB * 0.05 * 12)}</span>
               </div>
             </div>
           </div>
@@ -543,11 +525,11 @@ export default function SensorCalculator() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-300">Annual Storage (1TB):</span>
-                <span className="font-medium text-white">{formatCurrency(5000)}</span>
+                <span className="font-medium text-white">{formatCurrency(scadaStorageGB * 0.40 * 12)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t border-gray-700">
                 <span className="font-semibold text-white">Total Annual Cost:</span>
-                <span className="font-bold text-white">{formatCurrency(scadaCost + 5000)}</span>
+                <span className="font-bold text-white">{formatCurrency(scadaCost + scadaStorageGB * 0.40 * 12)}</span>
               </div>
             </div>
           </div>
