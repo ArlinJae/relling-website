@@ -8,6 +8,7 @@ interface DataPoint {
   channels: number;
   Node: number;
   SCADA: number;
+  NI: number;
   difference: number;
 }
 
@@ -19,6 +20,16 @@ export default function Page() {
   const SCADA_COST_PER_CHANNEL_SMALL = 1000;
   const SCADA_COST_PER_CHANNEL_MEDIUM = 750;
   const SCADA_COST_PER_CHANNEL_LARGE = 650;
+  
+  // NI Cost Constants
+  const NI_SOFTWARE_COST_PER_USER = 2750;
+  const NI_CHASSIS_COSTS = {
+    1: 1000,    // 1-slot chassis
+    4: 2500,    // 4-slot chassis
+    8: 3800,    // 8-slot chassis
+    14: 5500    // 14-slot chassis
+  };
+  const NI_MODULE_COST_PER_CHANNEL = 250; // Average cost per channel
 
   // Generate data points
   const generateData = (): DataPoint[] => {
@@ -27,17 +38,30 @@ export default function Page() {
     for (const channels of channelCounts) {
       // Node cost calculation
       const nodeCost = NODE_INITIAL_COST + (channels * NODE_COST_PER_CHANNEL);
+      
       // SCADA cost calculation with different per-channel costs based on scale
       let scadaPerChannel = SCADA_COST_PER_CHANNEL_SMALL;
       if (channels > 200) scadaPerChannel = SCADA_COST_PER_CHANNEL_LARGE;
       else if (channels > 50) scadaPerChannel = SCADA_COST_PER_CHANNEL_MEDIUM;
       let scadaCost = SCADA_INITIAL_COST + (channels * scadaPerChannel);
+      
+      // NI cost calculation
+      let niChassisCost = NI_CHASSIS_COSTS[1];
+      if (channels > 64) niChassisCost = NI_CHASSIS_COSTS[14];
+      else if (channels > 32) niChassisCost = NI_CHASSIS_COSTS[8];
+      else if (channels > 16) niChassisCost = NI_CHASSIS_COSTS[4];
+      
+      const niModuleCost = channels * NI_MODULE_COST_PER_CHANNEL;
+      const niCost = niChassisCost + niModuleCost + NI_SOFTWARE_COST_PER_USER;
+      
       // Ensure SCADA is never less expensive than Node
       if (scadaCost < nodeCost) scadaCost = nodeCost;
+      
       data.push({
         channels,
         Node: Math.round(nodeCost),
         SCADA: Math.round(scadaCost),
+        NI: Math.round(niCost),
         difference: Math.round(scadaCost - nodeCost)
       });
     }
@@ -106,6 +130,15 @@ export default function Page() {
                   dot={{ r: 6, fill: '#3D4C5C' }}
                   activeDot={{ r: 8, fill: '#3D4C5C' }}
                   name="Traditional SCADA"
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="NI" 
+                  stroke="#FF6B6B" 
+                  strokeWidth={3}
+                  dot={{ r: 6, fill: '#FF6B6B' }}
+                  activeDot={{ r: 8, fill: '#FF6B6B' }}
+                  name="National Instruments"
                 />
               </LineChart>
             </ResponsiveContainer>
