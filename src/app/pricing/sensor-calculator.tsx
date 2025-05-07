@@ -32,6 +32,14 @@ interface Preset {
   description: string;
   sensors: SelectedSensor[];
   machines: Machine[];
+  isNIPreset?: boolean;
+  niConfig?: {
+    chassisCost: number;
+    moduleCost: number;
+    totalChannels: number;
+    description: string;
+    limitations?: string;
+  };
 }
 
 const commonSensors: Sensor[] = [
@@ -308,13 +316,88 @@ const presets: Preset[] = [
       commonMachines.find(m => m.id === 'conveyor')!,
       commonMachines.find(m => m.id === 'generator')!,
     ]
+  },
+  {
+    id: 'ni-usb-6009',
+    name: 'NI USB-6009 Basic Setup',
+    description: 'Entry-level USB data acquisition for simple measurements',
+    isNIPreset: true,
+    niConfig: {
+      chassisCost: 500,
+      moduleCost: 0,
+      totalChannels: 8,
+      description: '8 analog input channels (14-bit), 2 analog outputs, 12 digital I/O lines',
+      limitations: 'Not recommended for strain gauges, high-accuracy temperature, vibration'
+    },
+    sensors: [],
+    machines: []
+  },
+  {
+    id: 'ni-usb-6211',
+    name: 'NI USB-6211 Advanced Setup',
+    description: 'Higher accuracy USB data acquisition for more demanding applications',
+    isNIPreset: true,
+    niConfig: {
+      chassisCost: 2000,
+      moduleCost: 0,
+      totalChannels: 16,
+      description: '16 analog input channels (16-bit, 250 kS/s), 2 analog outputs, 4 digital inputs, 4 digital outputs',
+      limitations: 'Requires external signal conditioning for some sensors'
+    },
+    sensors: [],
+    machines: []
+  },
+  {
+    id: 'ni-cdaq-universal',
+    name: 'NI cDAQ Universal Setup',
+    description: 'Single-slot chassis with universal module for mixed sensor types',
+    isNIPreset: true,
+    niConfig: {
+      chassisCost: 1000,
+      moduleCost: 1800,
+      totalChannels: 4,
+      description: '4 universal channels (supports thermocouples, RTDs, strain gauges)',
+      limitations: 'Limited to 4 channels'
+    },
+    sensors: [],
+    machines: []
+  },
+  {
+    id: 'ni-cdaq-specialized',
+    name: 'NI cDAQ Specialized Setup',
+    description: 'Single-slot chassis with specialized module for specific sensor types',
+    isNIPreset: true,
+    niConfig: {
+      chassisCost: 1000,
+      moduleCost: 1200,
+      totalChannels: 4,
+      description: '4 channels with specialized signal conditioning',
+      limitations: 'Limited to specific sensor types'
+    },
+    sensors: [],
+    machines: []
   }
 ];
+
+interface ChassisConfig {
+  slots: number;
+  cost: number;
+  maxChannels: number;
+}
+
+const CHASSIS_CONFIGS: Record<string, ChassisConfig> = {
+  '1-slot': { slots: 1, cost: 1000, maxChannels: 4 },
+  '4-slot': { slots: 4, cost: 2500, maxChannels: 16 },
+  '8-slot': { slots: 8, cost: 3800, maxChannels: 32 },
+  '14-slot': { slots: 14, cost: 5000, maxChannels: 56 }
+};
 
 export default function SensorCalculator() {
   const [selectedSensors, setSelectedSensors] = useState<SelectedSensor[]>([]);
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [niUserCount, setNiUserCount] = useState<number>(1);
+  const [selectedNIPreset, setSelectedNIPreset] = useState<Preset | null>(null);
 
   const filteredSensors = useMemo(() => {
     return commonSensors.filter(sensor => {
@@ -354,8 +437,18 @@ export default function SensorCalculator() {
   };
 
   const applyPreset = (preset: Preset) => {
-    setSelectedSensors(preset.sensors);
-    setSelectedMachines(preset.machines);
+    if (preset.isNIPreset && preset.niConfig) {
+      // For NI presets, update the NI configuration
+      setSelectedNIPreset(preset);
+      // Clear other sensors and machines
+      setSelectedSensors([]);
+      setSelectedMachines([]);
+    } else {
+      // For regular presets, update sensors and machines
+      setSelectedSensors(preset.sensors);
+      setSelectedMachines(preset.machines);
+      setSelectedNIPreset(null);
+    }
   };
 
   const addMachine = (machine: Machine) => {
@@ -367,6 +460,166 @@ export default function SensorCalculator() {
     });
   };
 
+  const calculateNICost = () => {
+    // Calculate based on selected sensors and machine sensors
+    const sensorChannels = selectedSensors.reduce((sum, { sensor, quantity }) => sum + (sensor.channels * quantity), 0);
+    const machineChannels = selectedMachines.reduce((sum, machine) => 
+      sum + machine.sensors.reduce((sensorSum, sensor) => sensorSum + sensor.channels, 0), 0
+    );
+    const totalChannels = sensorChannels + machineChannels;
+    
+    // If no sensors are selected, return minimal cost
+    if (totalChannels === 0) {
+      return {
+        hardwareCost: 0,
+        moduleCost: 0,
+        softwareCost: 0,
+        annualTotal: 0,
+        description: 'No sensors selected',
+        limitations: 'Add sensors to see NI costs',
+        alternatives: []
+      };
+    }
+
+    // Group sensors by type for module cost calculation
+    const sensorGroups = [...selectedSensors, ...selectedMachines.flatMap(machine => 
+      machine.sensors.map(sensor => ({ sensor, quantity: 1 }))
+    )].reduce((groups, { sensor, quantity }) => {
+      const key = sensor.category;
+      if (!groups[key]) {
+        groups[key] = { channels: 0, quantity: 0 };
+      }
+      groups[key].channels += sensor.channels * quantity;
+      groups[key].quantity += quantity;
+      return groups;
+    }, {} as Record<string, { channels: number; quantity: number }>);
+
+    // Determine if we need specialized modules
+    const hasSpecializedSensors = Object.keys(sensorGroups).some(category => 
+      ['Temperature', 'Strain', 'Vibration', 'Acoustic'].includes(category)
+    );
+
+    // Calculate specialized module costs
+    const specializedModuleCost = Object.entries(sensorGroups).reduce((total, [category, { channels }]) => {
+      let moduleCost = 0;
+      let channelsPerModule = 4; // Default channels per module
+      
+      if (category === 'Temperature') {
+        moduleCost = 800;
+        channelsPerModule = 8; // Temperature modules typically have more channels
+      } else if (category === 'Strain') {
+        moduleCost = 1200;
+      } else if (['Vibration', 'Acoustic'].includes(category)) {
+        moduleCost = 1500;
+      } else {
+        moduleCost = 400; // Basic module cost for other types
+      }
+      
+      // Calculate number of modules needed for this category
+      const modulesNeeded = Math.ceil(channels / channelsPerModule);
+      return total + (moduleCost * modulesNeeded);
+    }, 0);
+
+    // Calculate costs for different options
+    const usb6009Cost = {
+      hardwareCost: 500,
+      moduleCost: 0,
+      softwareCost: 2750 * niUserCount,
+      annualTotal: 500 + (2750 * niUserCount),
+      description: 'USB-6009 Basic Setup',
+      limitations: 'Limited to 8 basic channels, not suitable for specialized sensors'
+    };
+
+    const usb6211Cost = {
+      hardwareCost: 2000,
+      moduleCost: 0,
+      softwareCost: 2750 * niUserCount,
+      annualTotal: 2000 + (2750 * niUserCount),
+      description: 'USB-6211 Advanced Setup',
+      limitations: 'Limited to 16 channels, requires external conditioning for specialized sensors'
+    };
+
+    // Calculate chassis-based solutions
+    const calculateChassisCost = (channels: number, specialized: boolean): {
+      hardwareCost: number;
+      moduleCost: number;
+      softwareCost: number;
+      annualTotal: number;
+      description: string;
+      limitations: string;
+    } => {
+      const CHANNELS_PER_MODULE = 4;
+      const totalModulesNeeded = Math.ceil(channels / CHANNELS_PER_MODULE);
+      
+      // Determine which chassis to use based on module count
+      let selectedChassis = '1-slot';
+      if (totalModulesNeeded > CHASSIS_CONFIGS['14-slot'].slots) {
+        // Need multiple 14-slot chassis
+        const chassisCount = Math.ceil(totalModulesNeeded / CHASSIS_CONFIGS['14-slot'].slots);
+        return {
+          hardwareCost: CHASSIS_CONFIGS['14-slot'].cost * chassisCount,
+          moduleCost: specialized ? specializedModuleCost : (totalModulesNeeded * 400),
+          softwareCost: 2750 * niUserCount,
+          annualTotal: (CHASSIS_CONFIGS['14-slot'].cost * chassisCount) + 
+                      (specialized ? specializedModuleCost : (totalModulesNeeded * 400)) + 
+                      (2750 * niUserCount),
+          description: `${chassisCount}x 14-Slot Chassis with ${totalModulesNeeded} Modules`,
+          limitations: `Supports up to ${chassisCount * CHASSIS_CONFIGS['14-slot'].maxChannels} channels`
+        };
+      } else if (totalModulesNeeded > CHASSIS_CONFIGS['8-slot'].slots) {
+        selectedChassis = '14-slot';
+      } else if (totalModulesNeeded > CHASSIS_CONFIGS['4-slot'].slots) {
+        selectedChassis = '8-slot';
+      } else if (totalModulesNeeded > CHASSIS_CONFIGS['1-slot'].slots) {
+        selectedChassis = '4-slot';
+      }
+
+      return {
+        hardwareCost: CHASSIS_CONFIGS[selectedChassis].cost,
+        moduleCost: specialized ? specializedModuleCost : (totalModulesNeeded * 400),
+        softwareCost: 2750 * niUserCount,
+        annualTotal: CHASSIS_CONFIGS[selectedChassis].cost + 
+                    (specialized ? specializedModuleCost : (totalModulesNeeded * 400)) + 
+                    (2750 * niUserCount),
+        description: `${selectedChassis} Chassis with ${totalModulesNeeded} Modules`,
+        limitations: `Supports up to ${CHASSIS_CONFIGS[selectedChassis].maxChannels} channels`
+      };
+    };
+
+    // Determine the best solution based on requirements
+    let bestSolution;
+    if (totalChannels <= 8 && !hasSpecializedSensors) {
+      bestSolution = usb6009Cost;
+    } else if (totalChannels <= 16 && !hasSpecializedSensors) {
+      bestSolution = usb6211Cost;
+    } else {
+      bestSolution = calculateChassisCost(totalChannels, hasSpecializedSensors);
+    }
+
+    // Get all valid alternatives
+    const alternatives = [
+      usb6009Cost,
+      usb6211Cost,
+      calculateChassisCost(Math.min(totalChannels, 16), hasSpecializedSensors),
+      calculateChassisCost(Math.min(totalChannels, 32), hasSpecializedSensors),
+      calculateChassisCost(Math.min(totalChannels, 56), hasSpecializedSensors)
+    ].filter(sol => {
+      // Don't show USB solutions if specialized sensors are needed
+      if (hasSpecializedSensors && (sol === usb6009Cost || sol === usb6211Cost)) {
+        return false;
+      }
+      // Don't show solutions that can't handle the channel count
+      if (sol === usb6009Cost && totalChannels > 8) return false;
+      if (sol === usb6211Cost && totalChannels > 16) return false;
+      return sol.annualTotal !== bestSolution.annualTotal;
+    });
+
+    return {
+      ...bestSolution,
+      alternatives
+    };
+  };
+
   const totalChannels = (() => {
     const sensorChannels = selectedSensors.reduce((sum, { sensor, quantity }) => sum + (sensor.channels * quantity), 0);
     const machineChannels = selectedMachines.reduce((sum, machine) => sum + machine.sensors.reduce((sensorSum, sensor) => sensorSum + sensor.channels, 0), 0);
@@ -375,22 +628,22 @@ export default function SensorCalculator() {
   const numMachines = selectedMachines.length;
   const numSensors = selectedSensors.length + totalChannels.machineChannels;
   const storageTB = Math.ceil(numSensors / 6);
+  
   // Node
-  const nodeHardwareCost = numMachines * 6000;
+  const nodeHardwareCost = numSensors > 0 ? 6000 : 0; // Only add when sensors are present
   const nodeAnnualChannelCost = totalChannels.total * 200;
   const nodeAnnualStorageCost = storageTB * 50;
-  const nodeAnnualTotal = nodeAnnualChannelCost + nodeAnnualStorageCost;
-  const nodeFiveYearTotal = nodeHardwareCost + (nodeAnnualTotal * 5);
+  const nodeAnnualTotal = nodeHardwareCost + nodeAnnualChannelCost + nodeAnnualStorageCost;
+  
   // SCADA
-  const scadaDevCost = 30000;
+  const scadaDevCost = numSensors > 0 ? 30000 : 0; // Only add when sensors are present
   let scadaPerChannel = 1000;
   if (totalChannels.total > 200) scadaPerChannel = 650;
   else if (totalChannels.total > 50) scadaPerChannel = 750;
   const scadaAnnualChannelCost = totalChannels.total * scadaPerChannel;
   const scadaAnnualStorageCost = storageTB * 70;
-  const scadaAnnualTotal = scadaAnnualChannelCost + scadaAnnualStorageCost;
-  const scadaFiveYearTotal = scadaDevCost + (scadaAnnualTotal * 5);
-  const savings = Math.max(scadaFiveYearTotal - nodeFiveYearTotal, 0);
+  const scadaAnnualTotal = scadaDevCost + scadaAnnualChannelCost + scadaAnnualStorageCost;
+  const savings = Math.max(scadaAnnualTotal - nodeAnnualTotal, 0);
 
   const formatCurrency = (value: number | undefined) => {
     if (value === undefined) return '$0';
@@ -532,68 +785,189 @@ export default function SensorCalculator() {
       {/* Cost Summary Section */}
       <div className="mt-8 p-4 sm:p-6 bg-gray-800 rounded-lg border border-gray-700">
         <h3 className="text-xl font-bold text-white mb-6">Cost Summary</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h4 className="text-lg font-semibold text-white mb-4">Node</h4>
             <div className="space-y-3">
+              {nodeHardwareCost > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-gray-300">Hardware/Development:</span>
+                  <span className="font-medium text-white">{formatCurrency(nodeHardwareCost)}</span>
+                </div>
+              )}
               <div className="flex justify-between">
-                <span className="text-gray-300">Hardware/Development (one-time):</span>
-                <span className="font-medium text-white">{formatCurrency(nodeHardwareCost)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-300">Annual Channel Fees:</span>
+                <span className="text-gray-300">Channel Fees:</span>
                 <span className="font-medium text-white">{formatCurrency(nodeAnnualChannelCost)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-300">Annual Storage ({storageTB} TB):</span>
+                <span className="text-gray-300">Storage ({storageTB} TB):</span>
                 <span className="font-medium text-white">{formatCurrency(nodeAnnualStorageCost)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t border-gray-700">
                 <span className="font-semibold text-white">Annual Total:</span>
                 <span className="font-bold text-white">{formatCurrency(nodeAnnualTotal)}</span>
               </div>
-              <div className="flex justify-between pt-3 border-t border-gray-700">
-                <span className="font-semibold text-white">5-Year Total:</span>
-                <span className="font-bold text-white">{formatCurrency(nodeFiveYearTotal)}</span>
-              </div>
             </div>
           </div>
           <div>
             <h4 className="text-lg font-semibold text-white mb-4">Traditional SCADA</h4>
             <div className="space-y-3">
+              {scadaDevCost > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-gray-300">Development/Deployment:</span>
+                  <span className="font-medium text-white">{formatCurrency(scadaDevCost)}</span>
+                </div>
+              )}
               <div className="flex justify-between">
-                <span className="text-gray-300">Development/Deployment (one-time):</span>
-                <span className="font-medium text-white">{formatCurrency(scadaDevCost)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-300">Annual Channel Fees:</span>
+                <span className="text-gray-300">Channel Fees:</span>
                 <span className="font-medium text-white">{formatCurrency(scadaAnnualChannelCost)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-300">Annual Storage ({storageTB} TB):</span>
+                <span className="text-gray-300">Storage ({storageTB} TB):</span>
                 <span className="font-medium text-white">{formatCurrency(scadaAnnualStorageCost)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t border-gray-700">
                 <span className="font-semibold text-white">Annual Total:</span>
                 <span className="font-bold text-white">{formatCurrency(scadaAnnualTotal)}</span>
               </div>
-              <div className="flex justify-between pt-3 border-t border-gray-700">
-                <span className="font-semibold text-white">5-Year Total:</span>
-                <span className="font-bold text-white">{formatCurrency(scadaFiveYearTotal)}</span>
-              </div>
+            </div>
+          </div>
+          <div>
+            <h4 className="text-lg font-semibold text-white mb-4">National Instruments</h4>
+            <div className="space-y-3">
+              {selectedNIPreset?.niConfig ? (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-300">Hardware Cost:</span>
+                    <span className="font-medium text-white">{formatCurrency(selectedNIPreset.niConfig.chassisCost)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-300">Module Costs:</span>
+                    <span className="font-medium text-white">{formatCurrency(selectedNIPreset.niConfig.moduleCost)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-300">Software ({niUserCount} users):</span>
+                    <span className="font-medium text-white">{formatCurrency(2750 * niUserCount)}</span>
+                  </div>
+                  <div className="flex justify-between pt-3 border-t border-gray-700">
+                    <span className="font-semibold text-white">Annual Total:</span>
+                    <span className="font-bold text-white">{formatCurrency(
+                      selectedNIPreset.niConfig.chassisCost + 
+                      selectedNIPreset.niConfig.moduleCost + 
+                      (2750 * niUserCount)
+                    )}</span>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-300">
+                    <p className="font-semibold">Selected Solution:</p>
+                    <p>{selectedNIPreset.niConfig.description}</p>
+                    {selectedNIPreset.niConfig.limitations && (
+                      <p className="text-yellow-400 mt-1">{selectedNIPreset.niConfig.limitations}</p>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-300">Hardware Cost:</span>
+                    <span className="font-medium text-white">{formatCurrency(calculateNICost().hardwareCost)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-300">Module Costs:</span>
+                    <span className="font-medium text-white">{formatCurrency(calculateNICost().moduleCost)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-300">Software ({niUserCount} users):</span>
+                    <span className="font-medium text-white">{formatCurrency(calculateNICost().softwareCost)}</span>
+                  </div>
+                  <div className="flex justify-between pt-3 border-t border-gray-700">
+                    <span className="font-semibold text-white">Annual Total:</span>
+                    <span className="font-bold text-white">{formatCurrency(calculateNICost().annualTotal)}</span>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-300">
+                    <p className="font-semibold">Selected Solution:</p>
+                    <p>{calculateNICost().description}</p>
+                    <p className="text-yellow-400 mt-1">{calculateNICost().limitations}</p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
-        {/* 5-Year Savings Section */}
+
+        {/* Annual Savings Section */}
         <div className="mt-8 p-6 bg-gray-700 rounded-xl text-center shadow-lg">
-          <h4 className="text-2xl font-extrabold text-gray-300 mb-2">5-Year Savings with Node</h4>
+          <h4 className="text-2xl font-extrabold text-gray-300 mb-2">Annual Savings with Node</h4>
           <div className="text-4xl font-extrabold text-gray-400 mb-2">{formatCurrency(savings)}</div>
-          <div className="text-lg text-gray-200 mb-4">Total savings over 5 years compared to SCADA</div>
+          <div className="text-lg text-gray-200 mb-4">Total savings per year compared to SCADA</div>
           <div className="text-base text-gray-100 max-w-2xl mx-auto">
             <span className="font-semibold">How is this calculated?</span> <br />
             <span>
-              We add up all up-front and annual costs for both systems over 5 years, including hardware, development, channel fees, and storage. Node&apos;s simple pricing and lower storage costs mean you save more as you scale.
+              We compare the total annual costs for both systems, including hardware/development costs, channel fees, and storage. Node&apos;s simple pricing and lower storage costs mean you save more as you scale.
             </span>
+          </div>
+        </div>
+      </div>
+
+      {/* NI Configuration Section */}
+      <div className="mt-8 bg-gray-700 p-4 rounded-lg">
+        <h3 className="text-xl font-bold text-white mb-4">National Instruments Configuration</h3>
+        
+        <div className="mb-4">
+          <label className="block text-gray-300 mb-2">Number of Software Users</label>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setNiUserCount(Math.max(1, niUserCount - 1))}
+              className="p-2 bg-gray-600 rounded hover:bg-gray-500"
+            >
+              <MinusIcon className="h-5 w-5 text-white" />
+            </button>
+            <span className="text-white">{niUserCount}</span>
+            <button
+              onClick={() => setNiUserCount(niUserCount + 1)}
+              className="p-2 bg-gray-600 rounded hover:bg-gray-500"
+            >
+              <PlusIcon className="h-5 w-5 text-white" />
+            </button>
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-300 mb-2">Pre-configured Options</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {presets.filter(p => p.isNIPreset).map(preset => (
+              <button
+                key={preset.id}
+                onClick={() => setSelectedNIPreset(preset)}
+                className={`p-4 rounded-lg text-left ${
+                  selectedNIPreset?.id === preset.id
+                    ? 'bg-blue-600 border-2 border-blue-400'
+                    : 'bg-gray-600 hover:bg-gray-500'
+                }`}
+              >
+                <h4 className="font-bold text-white">{preset.name}</h4>
+                <p className="text-gray-300 text-sm">{preset.description}</p>
+                <p className="text-gray-300 text-sm mt-2">{preset.niConfig?.description}</p>
+                {preset.niConfig?.limitations && (
+                  <p className="text-yellow-400 text-sm mt-2">Limitations: {preset.niConfig.limitations}</p>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-300 mb-2">Alternative Solutions</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {calculateNICost().alternatives.map((solution, index) => (
+              <div
+                key={index}
+                className="p-4 rounded-lg bg-gray-600"
+              >
+                <h4 className="font-bold text-white">{solution.description}</h4>
+                <p className="text-gray-300 text-sm mt-2">Annual Cost: {formatCurrency(solution.annualTotal)}</p>
+                <p className="text-yellow-400 text-sm mt-2">{solution.limitations}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
